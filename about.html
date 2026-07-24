@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>about | 石の音 - 囲碁学習ノート</title>
+<meta name="description" content="石の音を書いている人について。囲碁を学び始めた理由、学習方針、関連リンク、お問い合わせ。">
+<meta name="robots" content="noai, noimageai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Zen+Old+Mincho:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink: #d85d84;
+    --pink-deep: #7a2242;
+    --pink-pale: #f6dfe6;
+    --orange: #e08238;
+    --orange-deep: #b85f22;
+    --wood: #f4e9d8;
+    --wood-line: #c9a876;
+    --cream: #fbf5ee;
+    --ink: #2c231f;
+    --ink-soft: #6b5c53;
+    --white: #fffdfa;
+    --shadow: 0 18px 40px -20px rgba(122,34,66,0.35);
+    --error: #b3405a;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.85;
+    letter-spacing:0.02em;
+  }
+  a{color:inherit; text-decoration:none;}
+  h1,h2,h3,.font-display{ font-family:'Shippori Mincho', serif; }
+  ::selection{ background:var(--orange); color:var(--white); }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline:3px solid var(--orange);
+    outline-offset:3px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+  }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 28px; }
+  .eyebrow{
+    font-size:0.78rem;
+    letter-spacing:0.32em;
+    color:var(--orange-deep);
+    font-weight:700;
+    display:inline-block;
+    margin-bottom:14px;
+  }
+  .section-title{
+    font-size:clamp(1.4rem, 2.6vw, 1.85rem);
+    font-weight:700;
+    color:var(--pink-deep);
+    margin-bottom:22px;
+  }
+
+  /* ---------- header / nav (with mobile toggle) ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(251,245,238,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(122,34,66,0.12);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px;
+    max-width:1080px; margin:0 auto;
+    position:relative;
+  }
+  .logo{ display:flex; align-items:baseline; gap:10px; }
+  .logo-mark{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:1.35rem;
+    color:var(--pink-deep);
+  }
+  .logo-sub{ font-size:0.68rem; letter-spacing:0.18em; color:var(--ink-soft); }
+  nav ul{ list-style:none; display:flex; gap:6px; }
+  nav a{
+    display:inline-block;
+    font-size:0.9rem;
+    font-weight:500;
+    padding:8px 16px;
+    border-radius:999px;
+    color:var(--ink);
+    transition:background .25s ease, color .25s ease;
+  }
+  nav a:hover{ background:var(--pink); color:var(--white); }
+  nav a.current{ background:var(--pink-deep); color:var(--white); }
+
+  .menu-toggle{
+    display:none;
+    background:none;
+    border:none;
+    font-size:1.4rem;
+    color:var(--pink-deep);
+    cursor:pointer;
+    padding:4px 8px;
+  }
+
+  @media (max-width:640px){
+    .menu-toggle{ display:block; }
+    nav ul{
+      display:none;
+      flex-direction:column;
+      position:absolute;
+      top:56px; right:0;
+      width:200px;
+      background:var(--white);
+      border:1px solid rgba(122,34,66,0.15);
+      border-radius:14px;
+      padding:10px;
+      box-shadow:var(--shadow);
+      gap:2px;
+    }
+    nav ul.active{ display:flex; }
+    nav a{ padding:10px 14px; font-size:0.86rem; }
+  }
+
+  /* ---------- page hero ---------- */
+  .page-hero{ padding:64px 0 30px; }
+  .page-hero h1{
+    font-size:clamp(2rem, 4vw, 2.7rem);
+    color:var(--pink-deep);
+    font-weight:800;
+  }
+  .page-hero p{
+    color:var(--ink-soft);
+    font-size:0.96rem;
+    max-width:52ch;
+    margin-top:14px;
+  }
+
+  /* ---------- intro block ---------- */
+  .about-intro{ padding:10px 0 20px; }
+  .intro-flex{
+    display:grid;
+    grid-template-columns:0.85fr 1.15fr;
+    gap:44px;
+    align-items:start;
+  }
+  .avatar-card{
+    background:var(--white);
+    border-radius:22px;
+    padding:30px;
+    border:1px solid rgba(122,34,66,0.09);
+    box-shadow:var(--shadow);
+    text-align:center;
+  }
+  .avatar-ring{
+    width:120px; height:120px;
+    border-radius:50%;
+    margin:0 auto 18px;
+    background:var(--wood);
+    display:flex; align-items:center; justify-content:center;
+    border:3px solid var(--pink-pale);
+  }
+  .avatar-ring svg{ width:64px; height:64px; }
+  .avatar-card h3{ color:var(--pink-deep); font-size:1.15rem; margin-bottom:6px; }
+  .avatar-card .rank{
+    display:inline-block;
+    font-size:0.76rem;
+    color:var(--orange-deep);
+    background:var(--pink-pale);
+    padding:4px 14px;
+    border-radius:999px;
+    font-weight:700;
+    letter-spacing:0.05em;
+  }
+  .avatar-card p{ margin-top:16px; font-size:0.86rem; color:var(--ink-soft); }
+
+  .intro-text p{
+    color:var(--ink);
+    font-size:0.96rem;
+    margin-bottom:18px;
+    max-width:60ch;
+  }
+  .intro-text p:last-child{ margin-bottom:0; }
+
+  @media (max-width:760px){
+    .intro-flex{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- policy list ---------- */
+  .policy{ padding:70px 0 20px; }
+  .policy-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+  }
+  .policy-card{
+    background:var(--white);
+    border-radius:18px;
+    padding:26px 24px;
+    border:1px solid rgba(122,34,66,0.09);
+    position:relative;
+    padding-left:30px;
+  }
+  .policy-card::before{
+    content:'';
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:4px;
+    background:linear-gradient(180deg, var(--pink), var(--orange));
+    border-radius:18px 0 0 18px;
+  }
+  .policy-num{
+    font-family:'Shippori Mincho', serif;
+    font-size:0.78rem;
+    color:var(--orange-deep);
+    letter-spacing:0.1em;
+    display:block;
+    margin-bottom:8px;
+  }
+  .policy-card h3{ color:var(--pink-deep); font-size:1.02rem; margin-bottom:8px; }
+  .policy-card p{ font-size:0.86rem; color:var(--ink-soft); }
+
+  @media (max-width:860px){ .policy-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- section-label pattern (from reference site) ---------- */
+  .section-label{
+    font-family:'Shippori Mincho', serif;
+    font-size:0.82rem;
+    color:var(--orange-deep);
+    letter-spacing:0.22em;
+    margin-bottom:18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .section-label::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:linear-gradient(90deg, rgba(216,93,132,0.35), transparent);
+  }
+
+  /* ---------- link cards (from reference site, re-themed) ---------- */
+  .links-section{ padding:70px 0 20px; }
+  .link-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+    gap:14px;
+    margin-bottom:40px;
+  }
+  .link-card{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:var(--white);
+    border:1px solid rgba(122,34,66,0.1);
+    border-radius:14px;
+    padding:16px 18px;
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .link-card::before{
+    content:'';
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:3px;
+    background:linear-gradient(180deg, var(--pink), var(--orange));
+  }
+  .link-card:hover{
+    transform:translateY(-4px);
+    box-shadow:var(--shadow);
+    border-color:rgba(216,93,132,0.4);
+  }
+  .link-icon{
+    font-size:22px;
+    flex-shrink:0;
+    width:44px; height:44px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--pink-pale);
+    border-radius:12px;
+  }
+  .link-text{ flex:1; min-width:0; }
+  .link-name{
+    display:block;
+    font-size:0.92rem;
+    font-weight:700;
+    color:var(--pink-deep);
+    margin-bottom:2px;
+  }
+  .link-desc{
+    display:block;
+    font-size:0.76rem;
+    color:var(--ink-soft);
+  }
+  .link-arrow{
+    font-size:1.1rem;
+    color:rgba(216,93,132,0.4);
+    flex-shrink:0;
+    transition:color .25s ease, transform .25s ease;
+  }
+  .link-card:hover .link-arrow{ color:var(--orange-deep); transform:translateX(3px); }
+
+  /* ---------- contact form (formspree ajax, matching reference behavior) ---------- */
+  .contact-section{ padding:20px 0 110px; }
+  .form-card{
+    background:var(--white);
+    border-radius:22px;
+    padding:34px 36px;
+    border:1px solid rgba(122,34,66,0.1);
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .form-card::before{
+    content:'';
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:4px;
+    background:linear-gradient(180deg, var(--pink), var(--orange));
+  }
+  .form-intro{
+    font-size:0.9rem;
+    color:var(--ink-soft);
+    margin-bottom:24px;
+  }
+  .form-group{ margin-bottom:18px; }
+  .form-label{
+    display:block;
+    font-size:0.8rem;
+    color:var(--pink-deep);
+    letter-spacing:0.08em;
+    margin-bottom:7px;
+    font-weight:700;
+  }
+  .required{ color:var(--error); font-style:normal; }
+  .form-input, .form-textarea{
+    width:100%;
+    background:var(--cream);
+    border:1.5px solid rgba(122,34,66,0.15);
+    border-radius:10px;
+    color:var(--ink);
+    font-family:inherit;
+    font-size:0.92rem;
+    padding:11px 15px;
+    transition:border-color .25s ease, box-shadow .25s ease;
+    outline:none;
+  }
+  .form-input::placeholder, .form-textarea::placeholder{ color:#b3a89f; }
+  .form-input:focus, .form-textarea:focus{
+    border-color:var(--pink);
+    box-shadow:0 0 0 4px rgba(216,93,132,0.12);
+  }
+  .form-textarea{ resize:vertical; min-height:130px; }
+  .field-error{ display:block; font-size:0.76rem; color:var(--error); margin-top:5px; }
+
+  .form-submit{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--orange);
+    color:var(--white);
+    border:none;
+    border-radius:999px;
+    font-family:inherit;
+    font-size:0.9rem;
+    font-weight:700;
+    letter-spacing:0.03em;
+    padding:12px 30px;
+    cursor:pointer;
+    transition:background .25s ease, transform .2s ease;
+    margin-top:6px;
+  }
+  .form-submit:hover{ background:var(--orange-deep); transform:translateY(-2px); }
+  .form-submit:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+
+  .form-success{
+    background:var(--pink-pale);
+    border:1px solid rgba(216,93,132,0.35);
+    border-radius:12px;
+    padding:16px 20px;
+    text-align:center;
+    color:var(--pink-deep);
+    font-size:0.92rem;
+    margin-bottom:20px;
+    font-weight:700;
+  }
+  .form-success-icon{ display:block; font-size:1.2rem; margin-bottom:6px; color:var(--orange); }
+
+  .form-error-global{
+    background:#fbe7ea;
+    border:1px solid rgba(179,64,90,0.35);
+    border-radius:12px;
+    padding:12px 16px;
+    color:var(--error);
+    font-size:0.86rem;
+    margin-bottom:16px;
+  }
+
+  /* ---------- back link ---------- */
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:var(--ink-soft);
+    font-size:0.86rem;
+    margin-top:20px;
+    padding:9px 18px;
+    border:1.5px solid rgba(122,34,66,0.15);
+    border-radius:999px;
+    transition:all .25s ease;
+  }
+  .back-link:hover{
+    color:var(--pink-deep);
+    border-color:var(--pink);
+    background:var(--pink-pale);
+  }
+
+  /* ---------- footer ---------- */
+  footer{ background:var(--ink); color:#cfc3ba; padding:56px 0 30px; }
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr 1fr;
+    gap:36px;
+    margin-bottom:36px;
+  }
+  .footer-brand .logo-mark{ color:var(--wood); }
+  .footer-brand p{ font-size:0.84rem; color:#a99d94; margin-top:10px; max-width:36ch; }
+  footer h4{ font-size:0.78rem; letter-spacing:0.14em; color:var(--orange); margin-bottom:14px; font-weight:700; }
+  footer ul{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+  footer a{ font-size:0.85rem; color:#cfc3ba; transition:color .2s ease; }
+  footer a:hover{ color:var(--orange); }
+  .footer-bottom{
+    border-top:1px solid rgba(255,255,255,0.1);
+    padding-top:22px;
+    display:flex; flex-direction:column; gap:8px;
+    font-size:0.76rem; color:#8a7f77;
+  }
+  .ai-notice{ font-size:0.74rem; color:#8a7f77; max-width:70ch; line-height:1.8; }
+  @media (max-width:760px){ .footer-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">石の音</span>
+      <span class="logo-sub">囲碁学習ノート</span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="メニューを開く">☰</button>
+    <nav aria-label="サイト内ナビゲーション">
+      <ul id="navLinks">
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="blog.html">日記</a></li>
+        <li><a href="gallery.html">ギャラリー</a></li>
+        <li><a href="about.html" class="current">about</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero wrap">
+    <span class="eyebrow">ABOUT</span>
+    <h1>about</h1>
+    <p>このノートを書いている人について。囲碁を学び始めた理由や、学習の方針を残しておきます。</p>
+  </section>
+
+  <section class="about-intro wrap">
+    <div class="intro-flex">
+      <div class="avatar-card">
+        <div class="avatar-ring">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="35" cy="35" r="15" fill="var(--pink)"/>
+            <circle cx="65" cy="65" r="15" fill="var(--orange)"/>
+            <circle cx="65" cy="35" r="15" fill="none" stroke="var(--wood-line)" stroke-width="2"/>
+          </svg>
+        </div>
+        <h3>りっちゃん</h3>
+        <span class="rank">囲碁歴：勉強中</span>
+        <p>マンガ・イラスト制作の傍ら、趣味として囲碁を学び始めました。石の音、更新しています。</p>
+      </div>
+
+      <div class="intro-text">
+        <p>もともと絵を描いたり物語を作ったりすることが好きで、マンガ制作や創作活動を続けてきました。そんな中で囲碁に出会い、盤の上でひとつずつ選択を積み重ねていく感覚に惹かれて勉強を始めました。</p>
+        <p>強くなることも目標のひとつですが、それ以上に「なぜその手が良いのか」を自分の言葉で説明できるようになりたいと思っています。上達の記録というより、考え方の変化を残していくノートのつもりで書いています。</p>
+        <p>間違った理解のまま書いていることもあると思うので、お気づきの点があればページ下のフォームから教えていただけると嬉しいです。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="policy wrap">
+    <h2 class="section-title">学習の方針</h2>
+    <div class="policy-grid">
+      <div class="policy-card">
+        <span class="policy-num">01</span>
+        <h3>丸暗記より理解</h3>
+        <p>定石や格言はできるだけ理由とセットで覚える。形だけ真似しても応用が利かないので。</p>
+      </div>
+      <div class="policy-card">
+        <span class="policy-num">02</span>
+        <h3>負けを記録する</h3>
+        <p>勝った対局より、負けた対局の方が学びが多い。悔しい気持ちも含めてそのまま残す。</p>
+      </div>
+      <div class="policy-card">
+        <span class="policy-num">03</span>
+        <h3>続けることを優先</h3>
+        <p>毎日でなくていい。忘れないくらいの頻度で、無理なく盤に向かい続けることを大事にする。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="links-section wrap">
+    <p class="section-label">創作活動の関連リンク</p>
+    <div class="link-grid">
+
+      <a class="link-card" href="https://rookie.shonenjump.com/users/14728546961183734555" target="_blank" rel="noopener">
+        <div class="link-icon">📚</div>
+        <div class="link-text">
+          <span class="link-name">ジャンプルーキー</span>
+          <span class="link-desc">オリジナル漫画を掲載中</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+      <a class="link-card" href="https://daysneo.com/author/Sam333333Sam/" target="_blank" rel="noopener">
+        <div class="link-icon">🌙</div>
+        <div class="link-text">
+          <span class="link-name">DaysNEO</span>
+          <span class="link-desc">漫画掲載サイト</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+      <a class="link-card" href="https://www.pixiv.net/users/105728284" target="_blank" rel="noopener">
+        <div class="link-icon">🎨</div>
+        <div class="link-text">
+          <span class="link-name">Pixiv</span>
+          <span class="link-desc">イラストを掲載中</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+      <a class="link-card" href="https://kakuyomu.jp/users/azalea_azalea72" target="_blank" rel="noopener">
+        <div class="link-icon">✒️</div>
+        <div class="link-text">
+          <span class="link-name">カクヨム</span>
+          <span class="link-desc">小説を掲載中</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+      <a class="link-card" href="https://www.youtube.com/@LilyPopins0512" target="_blank" rel="noopener">
+        <div class="link-icon">🎬</div>
+        <div class="link-text">
+          <span class="link-name">YouTube（リリポピ）</span>
+          <span class="link-desc">動画チャンネル</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+      <a class="link-card" href="https://bsky.app/profile/azaleaazalea88.bsky.social" target="_blank" rel="noopener">
+        <div class="link-icon">🦋</div>
+        <div class="link-text">
+          <span class="link-name">Bluesky</span>
+          <span class="link-desc">近況・作品のお知らせ</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+      <a class="link-card" href="https://azaleacreativeroom888.github.io/" target="_blank" rel="noopener">
+        <div class="link-icon">🌸</div>
+        <div class="link-text">
+          <span class="link-name">Azalea Creative Room</span>
+          <span class="link-desc">創作活動のメインハブ</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+      <a class="link-card" href="https://azaleacreativeroom888.github.io/links.html" target="_blank" rel="noopener">
+        <div class="link-icon">🔗</div>
+        <div class="link-text">
+          <span class="link-name">全リンク一覧</span>
+          <span class="link-desc">その他の制作サイトまとめ</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="contact-section wrap">
+    <p class="section-label">お問い合わせ</p>
+
+    <div class="form-card">
+      <p class="form-intro">用語の解釈の誤りや感想など、お気軽にどうぞ。Gmailで受け取り、返信いたします。</p>
+
+      <div data-fs-success class="form-success" style="display:none;">
+        <span class="form-success-icon">✦</span>
+        <p>メッセージを送信しました。ありがとうございます！</p>
+      </div>
+
+      <div data-fs-error class="form-error-global" style="display:none;"></div>
+
+      <form id="contact-form" action="https://formspree.io/f/maqvpvoz" method="POST">
+        <div class="form-group">
+          <label class="form-label" for="name">お名前</label>
+          <input class="form-input" type="text" id="name" name="name" placeholder="お名前" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">メールアドレス <span class="required">*</span></label>
+          <input class="form-input" type="email" id="email" name="email" data-fs-field placeholder="example@email.com" required>
+          <span data-fs-error="email" class="field-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="message">メッセージ <span class="required">*</span></label>
+          <textarea class="form-textarea" id="message" name="message" data-fs-field placeholder="メッセージを入力してください…" rows="6" required></textarea>
+          <span data-fs-error="message" class="field-error"></span>
+        </div>
+
+        <button class="form-submit" type="submit" data-fs-submit-btn>
+          <span class="submit-icon">📮</span> 送信する
+        </button>
+      </form>
+    </div>
+
+    <a class="back-link" href="index.html">← トップページに戻る</a>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo-mark">石の音</span>
+        <p>囲碁を学びはじめた記録を、ゆるく残していくノート。Azalea Creative Room の一部として運営しています。</p>
+      </div>
+      <div>
+        <h4>SITE</h4>
+        <ul>
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="blog.html">日記</a></li>
+          <li><a href="gallery.html">ギャラリー</a></li>
+          <li><a href="about.html">about</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>AZALEA CREATIVE ROOM</h4>
+        <ul>
+          <li><a href="https://azaleacreativeroom888.github.io/" target="_blank" rel="noopener">Azalea Creative Room</a></li>
+          <li><a href="https://azaleacreativeroom888.github.io/links.html" target="_blank" rel="noopener">全リンク一覧</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="ai-notice">当サイトに掲載されている画像・文章・作品について、AI学習への利用、トレース（トレパク）、無断転載・転載、二次利用を禁止します。スクリーンショットの転載・無断引用はご遠慮ください。</p>
+      <p class="ai-notice">Please refrain from using any images, text, or works on this website for AI training, tracing, unauthorized reproduction, redistribution, or secondary use.</p>
+      <p>&copy; 2026 石の音 - 囲碁学習ノート</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
+
+  window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+  formspree('initForm', { formElement: '#contact-form', formId: 'maqvpvoz' });
+</script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+
+</body>
+</html>
