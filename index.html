@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>石の音 - 囲碁学習ノート</title>
+<meta name="description" content="囲碁初心者のための学習ノート。基本用語、格言、日々の勉強記録をまとめています。">
+<meta name="robots" content="noai, noimageai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Zen+Old+Mincho:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink: #d85d84;
+    --pink-deep: #7a2242;
+    --pink-pale: #f6dfe6;
+    --orange: #e08238;
+    --orange-deep: #b85f22;
+    --wood: #f4e9d8;
+    --wood-line: #c9a876;
+    --cream: #fbf5ee;
+    --ink: #2c231f;
+    --ink-soft: #6b5c53;
+    --white: #fffdfa;
+    --shadow: 0 18px 40px -20px rgba(122,34,66,0.35);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.85;
+    letter-spacing:0.02em;
+    overflow-x:hidden;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+
+  h1,h2,h3,.font-display{
+    font-family:'Shippori Mincho', serif;
+  }
+
+  ::selection{ background:var(--orange); color:var(--white); }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline:3px solid var(--orange);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- utility ---------- */
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 28px; }
+  .eyebrow{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size:0.78rem;
+    letter-spacing:0.32em;
+    color:var(--orange-deep);
+    font-weight:700;
+    display:inline-block;
+    margin-bottom:14px;
+  }
+  .section-title{
+    font-size:clamp(1.6rem, 3vw, 2.2rem);
+    font-weight:700;
+    color:var(--pink-deep);
+    margin-bottom:8px;
+  }
+  .section-lede{
+    color:var(--ink-soft);
+    font-size:0.98rem;
+    max-width:56ch;
+    margin-bottom:44px;
+  }
+
+  /* ---------- header / nav ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(251,245,238,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(122,34,66,0.12);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px;
+    max-width:1080px; margin:0 auto;
+  }
+  .logo{
+    display:flex; align-items:baseline; gap:10px;
+  }
+  .logo-mark{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:1.35rem;
+    color:var(--pink-deep);
+    position:relative;
+  }
+  .logo-sub{
+    font-size:0.68rem;
+    letter-spacing:0.18em;
+    color:var(--ink-soft);
+  }
+  nav ul{
+    list-style:none;
+    display:flex;
+    gap:6px;
+  }
+  nav a{
+    display:inline-block;
+    font-size:0.9rem;
+    font-weight:500;
+    padding:8px 16px;
+    border-radius:999px;
+    color:var(--ink);
+    transition:background .25s ease, color .25s ease;
+  }
+  nav a:hover{ background:var(--pink); color:var(--white); }
+  nav a.current{ background:var(--pink-deep); color:var(--white); }
+
+  .nav-toggle{ display:none; }
+
+  @media (max-width:640px){
+    nav ul{ gap:2px; }
+    nav a{ padding:8px 10px; font-size:0.8rem; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;
+    padding:76px 0 90px;
+    overflow:hidden;
+  }
+  .hero-inner{
+    max-width:1080px; margin:0 auto; padding:0 28px;
+    display:grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap:48px;
+    align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(2.3rem, 5vw, 3.4rem);
+    line-height:1.35;
+    color:var(--pink-deep);
+    font-weight:800;
+    margin-bottom:22px;
+  }
+  .hero h1 .accent{
+    color:var(--orange-deep);
+    position:relative;
+  }
+  .hero-text{
+    color:var(--ink-soft);
+    font-size:1.02rem;
+    max-width:44ch;
+    margin-bottom:32px;
+  }
+  .hero-cta{
+    display:flex; gap:14px; flex-wrap:wrap;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:13px 28px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:0.92rem;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .btn-primary{
+    background:var(--pink);
+    color:var(--white);
+    box-shadow:var(--shadow);
+  }
+  .btn-primary:hover{ transform:translateY(-3px); box-shadow:0 22px 44px -18px rgba(122,34,66,0.5); }
+  .btn-outline{
+    background:transparent;
+    color:var(--pink-deep);
+    border:1.5px solid var(--pink);
+  }
+  .btn-outline:hover{ background:var(--pink-pale); }
+
+  /* goban hero graphic */
+  .goban-frame{
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .goban-frame svg{
+    width:100%; height:auto;
+    filter:drop-shadow(0 24px 40px rgba(122,34,66,0.28));
+  }
+
+  /* ---------- marquee proverb strip ---------- */
+  .proverb-strip{
+    background:var(--pink-deep);
+    color:var(--wood);
+    padding:14px 0;
+    overflow:hidden;
+    white-space:nowrap;
+    position:relative;
+  }
+  .proverb-track{
+    display:inline-flex;
+    gap:64px;
+    animation: scroll-left 32s linear infinite;
+  }
+  .proverb-track span{
+    font-family:'Zen Old Mincho', serif;
+    font-size:0.95rem;
+    letter-spacing:0.06em;
+    color:#f3d9c4;
+  }
+  .proverb-track span b{ color:var(--white); font-weight:600; }
+  @keyframes scroll-left{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+  }
+
+  /* ---------- intro section ---------- */
+  .intro{
+    padding:96px 0 40px;
+  }
+  .intro-grid{
+    display:grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap:56px;
+    align-items:start;
+  }
+  .intro-card{
+    background:var(--white);
+    border-radius:22px;
+    padding:34px;
+    box-shadow:var(--shadow);
+    border:1px solid rgba(122,34,66,0.08);
+  }
+  .intro-card h3{
+    color:var(--pink-deep);
+    font-size:1.15rem;
+    margin-bottom:12px;
+  }
+  .intro-card p{ color:var(--ink-soft); font-size:0.94rem; }
+  .stone-bullet{
+    display:inline-block;
+    width:9px; height:9px;
+    border-radius:50%;
+    margin-right:8px;
+    background:var(--orange);
+  }
+  .intro-list{ list-style:none; margin-top:18px; display:flex; flex-direction:column; gap:12px; }
+  .intro-list li{ font-size:0.92rem; color:var(--ink-soft); }
+
+  /* ---------- 用語カード ---------- */
+  .terms{
+    padding:60px 0 100px;
+  }
+  .term-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:22px;
+  }
+  .term-card{
+    background:var(--white);
+    border-radius:18px;
+    padding:26px 24px;
+    border:1px solid rgba(122,34,66,0.09);
+    position:relative;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .term-card:hover{
+    transform:translateY(-6px);
+    box-shadow:var(--shadow);
+  }
+  .term-card .ko{
+    position:absolute; top:20px; right:22px;
+    width:26px; height:26px; border-radius:50%;
+    background:var(--pink-pale);
+  }
+  .term-jp{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.28rem;
+    font-weight:700;
+    color:var(--pink-deep);
+    margin-bottom:6px;
+  }
+  .term-yomi{
+    font-size:0.76rem;
+    color:var(--orange-deep);
+    letter-spacing:0.08em;
+    margin-bottom:14px;
+    display:block;
+  }
+  .term-desc{
+    font-size:0.87rem;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width:860px){
+    .term-grid{ grid-template-columns:repeat(2, 1fr); }
+  }
+  @media (max-width:560px){
+    .term-grid{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- pages showcase ---------- */
+  .pages{
+    padding:20px 0 100px;
+  }
+  .page-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:24px;
+  }
+  .page-card{
+    background:linear-gradient(160deg, var(--white), var(--wood) 180%);
+    border-radius:20px;
+    padding:30px 26px;
+    border:1px solid rgba(122,34,66,0.08);
+    display:flex; flex-direction:column; gap:14px;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .page-card:hover{ transform:translateY(-6px); box-shadow:var(--shadow); }
+  .page-icon{
+    width:44px; height:44px;
+    border-radius:12px;
+    background:var(--orange);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--white);
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:1.15rem;
+  }
+  .page-card h3{ color:var(--pink-deep); font-size:1.12rem; }
+  .page-card p{ font-size:0.86rem; color:var(--ink-soft); flex:1; }
+  .page-card .goto{
+    font-size:0.82rem; font-weight:700; color:var(--orange-deep);
+    display:inline-flex; align-items:center; gap:6px;
+  }
+
+  @media (max-width:860px){
+    .page-grid{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:560px){
+    .page-grid{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- contact ---------- */
+  .contact{
+    padding:20px 0 100px;
+  }
+  .contact-card{
+    background:var(--pink-deep);
+    border-radius:26px;
+    padding:52px;
+    color:var(--wood);
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:44px;
+  }
+  .contact-card h2{ color:var(--white); font-size:1.7rem; margin-bottom:14px; }
+  .contact-card p{ color:#e8c9d3; font-size:0.92rem; max-width:40ch; }
+  .contact-form{ display:flex; flex-direction:column; gap:12px; }
+  .contact-form input, .contact-form textarea{
+    width:100%;
+    padding:13px 16px;
+    border-radius:12px;
+    border:none;
+    font-family:inherit;
+    font-size:0.9rem;
+    background:rgba(255,255,255,0.94);
+    color:var(--ink);
+  }
+  .contact-form textarea{ min-height:110px; resize:vertical; }
+  .contact-form button{
+    align-self:flex-start;
+    background:var(--orange);
+    color:var(--white);
+    border:none;
+    padding:13px 30px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:0.9rem;
+    cursor:pointer;
+    transition:transform .2s ease, background .2s ease;
+  }
+  .contact-form button:hover{ background:var(--orange-deep); transform:translateY(-2px); }
+
+  @media (max-width:760px){
+    .contact-card{ grid-template-columns:1fr; padding:36px 26px; }
+    .intro-grid{ grid-template-columns:1fr; }
+    .hero-inner{ grid-template-columns:1fr; }
+    .hero{ padding-top:52px; }
+    .goban-frame{ order:-1; max-width:340px; margin:0 auto 12px; }
+  }
+
+  /* ---------- footer ---------- */
+  footer{
+    background:var(--ink);
+    color:#cfc3ba;
+    padding:56px 0 30px;
+  }
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr 1fr;
+    gap:36px;
+    margin-bottom:36px;
+  }
+  .footer-brand .logo-mark{ color:var(--wood); }
+  .footer-brand p{ font-size:0.84rem; color:#a99d94; margin-top:10px; max-width:36ch; }
+  footer h4{
+    font-size:0.78rem;
+    letter-spacing:0.14em;
+    color:var(--orange);
+    margin-bottom:14px;
+    font-weight:700;
+  }
+  footer ul{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+  footer a{ font-size:0.85rem; color:#cfc3ba; transition:color .2s ease; }
+  footer a:hover{ color:var(--orange); }
+  .footer-bottom{
+    border-top:1px solid rgba(255,255,255,0.1);
+    padding-top:22px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    font-size:0.76rem; color:#8a7f77;
+  }
+  .ai-notice{
+    font-size:0.74rem;
+    color:#8a7f77;
+    max-width:60ch;
+    line-height:1.7;
+  }
+
+  @media (max-width:760px){
+    .footer-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">石の音</span>
+      <span class="logo-sub">囲碁学習ノート</span>
+    </a>
+    <nav aria-label="サイト内ナビゲーション">
+      <ul>
+        <li><a href="index.html" class="current">ホーム</a></li>
+        <li><a href="blog.html">日記</a></li>
+        <li><a href="gallery.html">ギャラリー</a></li>
+        <li><a href="about.html">about</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <span class="eyebrow">IGO STUDY NOTE</span>
+        <h1>一手ずつ、<br>盤の上で<span class="accent">静かに</span>強くなる。</h1>
+        <p class="hero-text">初心者目線の囲碁学習記録です。基本用語や格言、日々の勉強のログをのんびり残していきます。石を置くように、コツコツと。</p>
+        <div class="hero-cta">
+          <a href="blog.html" class="btn btn-primary">学習日記を読む</a>
+          <a href="#terms" class="btn btn-outline">基本用語を見る</a>
+        </div>
+      </div>
+
+      <div class="goban-frame">
+        <svg viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="囲碁盤のイラスト、ピンクとオレンジの石が並んでいる">
+          <rect x="10" y="10" width="400" height="400" rx="16" fill="var(--wood)"/>
+          <g stroke="var(--wood-line)" stroke-width="1.6">
+            <!-- vertical lines -->
+            <line x1="55" y1="45" x2="55" y2="375"/>
+            <line x1="100" y1="45" x2="100" y2="375"/>
+            <line x1="145" y1="45" x2="145" y2="375"/>
+            <line x1="190" y1="45" x2="190" y2="375"/>
+            <line x1="235" y1="45" x2="235" y2="375"/>
+            <line x1="280" y1="45" x2="280" y2="375"/>
+            <line x1="325" y1="45" x2="325" y2="375"/>
+            <line x1="370" y1="45" x2="370" y2="375"/>
+            <!-- horizontal lines -->
+            <line x1="55" y1="45" x2="370" y2="45"/>
+            <line x1="55" y1="90" x2="370" y2="90"/>
+            <line x1="55" y1="135" x2="370" y2="135"/>
+            <line x1="55" y1="180" x2="370" y2="180"/>
+            <line x1="55" y1="225" x2="370" y2="225"/>
+            <line x1="55" y1="270" x2="370" y2="270"/>
+            <line x1="55" y1="315" x2="370" y2="315"/>
+            <line x1="55" y1="360" x2="370" y2="360"/>
+          </g>
+          <!-- star points -->
+          <g fill="var(--wood-line)">
+            <circle cx="100" cy="90" r="3.2"/>
+            <circle cx="325" cy="90" r="3.2"/>
+            <circle cx="212" cy="212" r="3.2"/>
+            <circle cx="100" cy="315" r="3.2"/>
+            <circle cx="325" cy="315" r="3.2"/>
+          </g>
+          <!-- stones : pink -->
+          <g>
+            <circle cx="100" cy="90" r="13" fill="var(--pink)"/>
+            <circle cx="145" cy="135" r="13" fill="var(--pink)"/>
+            <circle cx="190" cy="90" r="13" fill="var(--pink)"/>
+            <circle cx="235" cy="180" r="13" fill="var(--pink)"/>
+            <circle cx="145" cy="225" r="13" fill="var(--pink)"/>
+            <circle cx="280" cy="270" r="13" fill="var(--pink)"/>
+            <circle cx="100" cy="270" r="13" fill="var(--pink)"/>
+          </g>
+          <!-- stones : orange accent (last move highlight style) -->
+          <g>
+            <circle cx="235" cy="135" r="13" fill="var(--orange)"/>
+            <circle cx="190" cy="225" r="13" fill="var(--orange)"/>
+            <circle cx="325" cy="225" r="13" fill="var(--orange)"/>
+            <circle cx="280" cy="315" r="13" fill="var(--orange)"/>
+          </g>
+          <!-- marker ring on most recent orange stone -->
+          <circle cx="280" cy="315" r="6" fill="none" stroke="var(--white)" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROVERB MARQUEE ================= -->
+  <div class="proverb-strip" aria-hidden="true">
+    <div class="proverb-track">
+      <span><b>「囲碁十訣」</b>其の一：貪不得勝 — 欲張れば勝てず</span>
+      <span>逃げるが勝ちの日もある。<b>「二立三析」</b></span>
+      <span><b>「岡目八目」</b> — 傍から見ればよくわかる</span>
+      <span>一局は一期一会。<b>「捨て石」</b>にも意味がある</span>
+      <span><b>「囲碁十訣」</b>其の一：貪不得勝 — 欲張れば勝てず</span>
+      <span>逃げるが勝ちの日もある。<b>「二立三析」</b></span>
+      <span><b>「岡目八目」</b> — 傍から見ればよくわかる</span>
+      <span>一局は一期一会。<b>「捨て石」</b>にも意味がある</span>
+    </div>
+  </div>
+
+  <!-- ================= INTRO ================= -->
+  <section class="intro wrap">
+    <span class="eyebrow">ABOUT THIS NOTE</span>
+    <h2 class="section-title">このサイトについて</h2>
+    <p class="section-lede">囲碁を学びはじめた記録を、ゆるく続けていくためのノートです。上達の過程も、迷いも、そのまま残していきます。</p>
+
+    <div class="intro-grid">
+      <div class="intro-card">
+        <h3>なぜ石の音、なのか</h3>
+        <p>盤に石を置くときの、あの小さな音が好きです。一手ごとに考えて、置いて、また考える。そのくり返しを記録する場所として名付けました。</p>
+      </div>
+      <div class="intro-card">
+        <h3>ここでやっていること</h3>
+        <ul class="intro-list">
+          <li><span class="stone-bullet"></span>基本用語・格言のまとめ（下の用語カード）</li>
+          <li><span class="stone-bullet"></span>日々の勉強の記録（<a href="blog.html" style="color:var(--pink-deep); text-decoration:underline;">日記</a>にて更新）</li>
+          <li><span class="stone-bullet"></span>棋譜や盤面のスケッチ（<a href="gallery.html" style="color:var(--pink-deep); text-decoration:underline;">ギャラリー</a>にて公開）</li>
+          <li><span class="stone-bullet"></span>学習方針や自己紹介（<a href="about.html" style="color:var(--pink-deep); text-decoration:underline;">about</a>にまとめ中）</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TERMS ================= -->
+  <section class="terms wrap" id="terms">
+    <span class="eyebrow">BASIC TERMS</span>
+    <h2 class="section-title">まずはここから、基本用語</h2>
+    <p class="section-lede">勉強を始めて最初につまずいた言葉たち。自分用の備忘録も兼ねてまとめています。</p>
+
+    <div class="term-grid">
+      <div class="term-card">
+        <span class="ko" aria-hidden="true"></span>
+        <div class="term-jp">アタリ</div>
+        <span class="term-yomi">atari</span>
+        <p class="term-desc">相手の石があと一手で取れる状態のこと。次に打てば石を取れる、と覚えておくと分かりやすい。</p>
+      </div>
+      <div class="term-card">
+        <span class="ko" aria-hidden="true"></span>
+        <div class="term-jp">シチョウ</div>
+        <span class="term-yomi">shicho</span>
+        <p class="term-desc">アタリを連続してかけ、石を斜めに追い詰めて取る手筋。盤の端まで続くかどうかの読みが鍵。</p>
+      </div>
+      <div class="term-card">
+        <span class="ko" aria-hidden="true"></span>
+        <div class="term-jp">ゲタ</div>
+        <span class="term-yomi">geta</span>
+        <p class="term-desc">シチョウとは違う形で相手の石を捕獲する手筋。逃げ場をあらかじめ塞いでおく考え方。</p>
+      </div>
+      <div class="term-card">
+        <span class="ko" aria-hidden="true"></span>
+        <div class="term-jp">ヨセ</div>
+        <span class="term-yomi">yose</span>
+        <p class="term-desc">終盤、境界線を確定させていく段階のこと。一手の価値を数えて打つ順番を考える。</p>
+      </div>
+      <div class="term-card">
+        <span class="ko" aria-hidden="true"></span>
+        <div class="term-jp">定石</div>
+        <span class="term-yomi">じょうせき</span>
+        <p class="term-desc">隅における、双方にとって妥当とされる決まった打ち方の型。丸暗記より意味の理解を優先したい。</p>
+      </div>
+      <div class="term-card">
+        <span class="ko" aria-hidden="true"></span>
+        <div class="term-jp">捨て石</div>
+        <span class="term-yomi">すていし</span>
+        <p class="term-desc">あえて取らせることで、他の場所で得をする考え方。囲碁十訣にも通じる、部分より全体を見る発想。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAGES ================= -->
+  <section class="pages wrap">
+    <span class="eyebrow">EXPLORE</span>
+    <h2 class="section-title">サイト内をめぐる</h2>
+    <p class="section-lede">記録は少しずつ増えていく予定です。ページごとに違った形で残しています。</p>
+
+    <div class="page-grid">
+      <a href="blog.html" class="page-card">
+        <span class="page-icon">日</span>
+        <h3>学習日記</h3>
+        <p>日付と、その日考えたことだけを淡々と残す記録帳。上達のログというより、思考の跡。</p>
+        <span class="goto">日記を見る →</span>
+      </a>
+      <a href="gallery.html" class="page-card">
+        <span class="page-icon">碁</span>
+        <h3>ギャラリー</h3>
+        <p>気に入った局面や自分で並べた棋譜、盤面のスケッチなどを並べていく場所。</p>
+        <span class="goto">見に行く →</span>
+      </a>
+      <a href="about.html" class="page-card">
+        <span class="page-icon">私</span>
+        <h3>about</h3>
+        <p>このノートを書いている人について。囲碁を学び始めた理由や、目指しているところ。</p>
+        <span class="goto">読んでみる →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section class="contact wrap">
+    <div class="contact-card">
+      <div>
+        <span class="eyebrow" style="color:var(--orange);">CONTACT</span>
+        <h2>感想や指摘、お気軽に</h2>
+        <p>用語の解釈の誤りや、こう考えるともっと分かりやすいよ、といったご意見も大歓迎です。</p>
+      </div>
+      <form class="contact-form" action="https://formspree.io/f/maqvpvoz" method="POST">
+        <input type="text" name="name" placeholder="お名前" required>
+        <input type="email" name="email" placeholder="メールアドレス" required>
+        <textarea name="message" placeholder="メッセージ" required></textarea>
+        <button type="submit">送信する</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo-mark">石の音</span>
+        <p>囲碁を学びはじめた記録を、ゆるく残していくノート。Azalea Creative Room の一部として運営しています。</p>
+      </div>
+      <div>
+        <h4>SITE</h4>
+        <ul>
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="blog.html">日記</a></li>
+          <li><a href="gallery.html">ギャラリー</a></li>
+          <li><a href="about.html">about</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>AZALEA CREATIVE ROOM</h4>
+        <ul>
+          <li><a href="https://azaleacreativeroom888.github.io/" target="_blank" rel="noopener">Azalea Creative Room</a></li>
+          <li><a href="https://azaleacreativeroom888.github.io/links.html" target="_blank" rel="noopener">全リンク一覧</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="ai-notice">本サイトのコンテンツ（文章・画像・イラスト等）は生成AIの学習データとしての使用を禁じます。／ No part of this site may be used for AI training purposes.</p>
+      <p>&copy; 2026 石の音 - 囲碁学習ノート</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
