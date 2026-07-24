@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ギャラリー | 石の音 - 囲碁学習ノート</title>
+<meta name="description" content="気に入った局面や自分で並べた棋譜、盤面のスケッチを並べたギャラリーページ。">
+<meta name="robots" content="noai, noimageai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Zen+Old+Mincho:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink: #d85d84;
+    --pink-deep: #7a2242;
+    --pink-pale: #f6dfe6;
+    --orange: #e08238;
+    --orange-deep: #b85f22;
+    --wood: #f4e9d8;
+    --wood-line: #c9a876;
+    --cream: #fbf5ee;
+    --ink: #2c231f;
+    --ink-soft: #6b5c53;
+    --white: #fffdfa;
+    --shadow: 0 18px 40px -20px rgba(122,34,66,0.35);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.85;
+    letter-spacing:0.02em;
+  }
+  a{color:inherit; text-decoration:none;}
+  h1,h2,h3,.font-display{ font-family:'Shippori Mincho', serif; }
+  ::selection{ background:var(--orange); color:var(--white); }
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--orange);
+    outline-offset:3px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+  }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 28px; }
+  .eyebrow{
+    font-size:0.78rem;
+    letter-spacing:0.32em;
+    color:var(--orange-deep);
+    font-weight:700;
+    display:inline-block;
+    margin-bottom:14px;
+  }
+  .section-lede{
+    color:var(--ink-soft);
+    font-size:0.98rem;
+    max-width:56ch;
+  }
+
+  /* header / nav (shared) */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(251,245,238,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(122,34,66,0.12);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px;
+    max-width:1080px; margin:0 auto;
+  }
+  .logo{ display:flex; align-items:baseline; gap:10px; }
+  .logo-mark{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:1.35rem;
+    color:var(--pink-deep);
+  }
+  .logo-sub{ font-size:0.68rem; letter-spacing:0.18em; color:var(--ink-soft); }
+  nav ul{ list-style:none; display:flex; gap:6px; }
+  nav a{
+    display:inline-block;
+    font-size:0.9rem;
+    font-weight:500;
+    padding:8px 16px;
+    border-radius:999px;
+    color:var(--ink);
+    transition:background .25s ease, color .25s ease;
+  }
+  nav a:hover{ background:var(--pink); color:var(--white); }
+  nav a.current{ background:var(--pink-deep); color:var(--white); }
+  @media (max-width:640px){
+    nav ul{ gap:2px; }
+    nav a{ padding:8px 10px; font-size:0.8rem; }
+  }
+
+  /* page hero */
+  .page-hero{ padding:64px 0 30px; }
+  .page-hero h1{
+    font-size:clamp(2rem, 4vw, 2.7rem);
+    color:var(--pink-deep);
+    font-weight:800;
+  }
+  .page-hero p{
+    color:var(--ink-soft);
+    font-size:0.96rem;
+    max-width:50ch;
+    margin-top:14px;
+  }
+
+  /* filter tabs */
+  .filters{
+    display:flex; gap:10px; flex-wrap:wrap;
+    margin:36px 0 40px;
+  }
+  .filter-btn{
+    font-size:0.84rem;
+    font-weight:600;
+    padding:9px 20px;
+    border-radius:999px;
+    border:1.5px solid rgba(122,34,66,0.2);
+    background:var(--white);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .filter-btn:hover{ border-color:var(--pink); color:var(--pink-deep); }
+  .filter-btn.active{
+    background:var(--pink-deep);
+    border-color:var(--pink-deep);
+    color:var(--white);
+  }
+
+  /* gallery grid */
+  .gallery{ padding:0 0 110px; }
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:26px;
+  }
+  .g-item{
+    background:var(--white);
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid rgba(122,34,66,0.09);
+    cursor:pointer;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .g-item:hover{ transform:translateY(-6px); box-shadow:var(--shadow); }
+  .g-thumb{
+    background:var(--wood);
+    padding:18px;
+    aspect-ratio:1/1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .g-thumb svg{ width:100%; height:100%; }
+  .g-caption{ padding:18px 20px 22px; }
+  .g-tag{
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    color:var(--orange-deep);
+    font-weight:700;
+    margin-bottom:6px;
+    display:block;
+  }
+  .g-title{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.02rem;
+    color:var(--pink-deep);
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .g-date{ font-size:0.78rem; color:var(--ink-soft); }
+
+  @media (max-width:860px){ .gallery-grid{ grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width:560px){ .gallery-grid{ grid-template-columns:1fr; } }
+
+  /* lightbox */
+  .lightbox{
+    position:fixed; inset:0;
+    background:rgba(44,35,31,0.86);
+    display:none;
+    align-items:center; justify-content:center;
+    z-index:1000;
+    padding:28px;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox-inner{
+    background:var(--cream);
+    border-radius:22px;
+    max-width:560px;
+    width:100%;
+    overflow:hidden;
+    box-shadow:0 40px 80px -20px rgba(0,0,0,0.5);
+  }
+  .lightbox-thumb{
+    background:var(--wood);
+    padding:32px;
+  }
+  .lightbox-thumb svg{ width:100%; height:100%; display:block; }
+  .lightbox-body{ padding:24px 28px 30px; position:relative; }
+  .lightbox-tag{ font-size:0.72rem; letter-spacing:0.1em; color:var(--orange-deep); font-weight:700; }
+  .lightbox-title{ font-family:'Shippori Mincho', serif; font-size:1.3rem; color:var(--pink-deep); margin:6px 0 8px; }
+  .lightbox-date{ font-size:0.82rem; color:var(--ink-soft); margin-bottom:14px; }
+  .lightbox-desc{ font-size:0.9rem; color:var(--ink); }
+  .lightbox-close{
+    position:absolute; top:-46px; right:0;
+    background:var(--white);
+    border:none;
+    width:36px; height:36px;
+    border-radius:50%;
+    font-size:1.1rem;
+    cursor:pointer;
+    color:var(--pink-deep);
+    box-shadow:var(--shadow);
+  }
+
+  /* footer */
+  footer{ background:var(--ink); color:#cfc3ba; padding:56px 0 30px; }
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr 1fr;
+    gap:36px;
+    margin-bottom:36px;
+  }
+  .footer-brand .logo-mark{ color:var(--wood); }
+  .footer-brand p{ font-size:0.84rem; color:#a99d94; margin-top:10px; max-width:36ch; }
+  footer h4{ font-size:0.78rem; letter-spacing:0.14em; color:var(--orange); margin-bottom:14px; font-weight:700; }
+  footer ul{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+  footer a{ font-size:0.85rem; color:#cfc3ba; transition:color .2s ease; }
+  footer a:hover{ color:var(--orange); }
+  .footer-bottom{
+    border-top:1px solid rgba(255,255,255,0.1);
+    padding-top:22px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    font-size:0.76rem; color:#8a7f77;
+  }
+  .ai-notice{ font-size:0.74rem; color:#8a7f77; max-width:60ch; line-height:1.7; }
+  @media (max-width:760px){ .footer-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">石の音</span>
+      <span class="logo-sub">囲碁学習ノート</span>
+    </a>
+    <nav aria-label="サイト内ナビゲーション">
+      <ul>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="blog.html">日記</a></li>
+        <li><a href="gallery.html" class="current">ギャラリー</a></li>
+        <li><a href="about.html">about</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero wrap">
+    <span class="eyebrow">GALLERY</span>
+    <h1>ギャラリー</h1>
+    <p class="section-lede">気に入った局面や自分で並べた棋譜、盤面のスケッチを残していく場所です。クリックすると詳細が見られます。</p>
+
+    <div class="filters" role="tablist" aria-label="ギャラリーの絞り込み">
+      <button class="filter-btn active" data-filter="all">すべて</button>
+      <button class="filter-btn" data-filter="kifu">棋譜</button>
+      <button class="filter-btn" data-filter="tsumego">詰碁</button>
+      <button class="filter-btn" data-filter="sketch">盤面スケッチ</button>
+    </div>
+  </section>
+
+  <section class="gallery wrap">
+    <div class="gallery-grid" id="galleryGrid">
+
+      <!-- item 1 -->
+      <div class="g-item" data-cat="kifu"
+        data-title="布石の研究 #1"
+        data-date="2026.07.18"
+        data-tag="棋譜"
+        data-desc="対局アプリで打った一局から、序盤の布石だけを抜き出して並べ直したもの。隅の占め方の違いを比べてみた。">
+        <div class="g-thumb">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="棋譜スケッチ1">
+            <rect width="200" height="200" fill="var(--wood)"/>
+            <g stroke="var(--wood-line)" stroke-width="1">
+              <line x1="30" y1="24" x2="30" y2="176"/><line x1="58" y1="24" x2="58" y2="176"/>
+              <line x1="86" y1="24" x2="86" y2="176"/><line x1="114" y1="24" x2="114" y2="176"/>
+              <line x1="142" y1="24" x2="142" y2="176"/><line x1="170" y1="24" x2="170" y2="176"/>
+              <line x1="30" y1="24" x2="170" y2="24"/><line x1="30" y1="52" x2="170" y2="52"/>
+              <line x1="30" y1="80" x2="170" y2="80"/><line x1="30" y1="108" x2="170" y2="108"/>
+              <line x1="30" y1="136" x2="170" y2="136"/><line x1="30" y1="164" x2="170" y2="164"/>
+            </g>
+            <circle cx="58" cy="52" r="9" fill="var(--pink)"/>
+            <circle cx="142" cy="52" r="9" fill="var(--orange)"/>
+            <circle cx="58" cy="136" r="9" fill="var(--orange)"/>
+            <circle cx="142" cy="136" r="9" fill="var(--pink)"/>
+            <circle cx="86" cy="80" r="9" fill="var(--pink)"/>
+          </svg>
+        </div>
+        <div class="g-caption">
+          <span class="g-tag">棋譜</span>
+          <div class="g-title">布石の研究 #1</div>
+          <div class="g-date">2026.07.18</div>
+        </div>
+      </div>
+
+      <!-- item 2 -->
+      <div class="g-item" data-cat="tsumego"
+        data-title="詰碁ノート：隅の攻防"
+        data-date="2026.07.14"
+        data-tag="詰碁"
+        data-desc="入門書に載っていた詰碁の一問を自分なりに整理し直したもの。正解手順よりも、なぜその手が良いのかを考えるために描いた。">
+        <div class="g-thumb">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="詰碁スケッチ">
+            <rect width="200" height="200" fill="var(--wood)"/>
+            <g stroke="var(--wood-line)" stroke-width="1">
+              <line x1="30" y1="24" x2="30" y2="176"/><line x1="58" y1="24" x2="58" y2="176"/>
+              <line x1="86" y1="24" x2="86" y2="176"/><line x1="114" y1="24" x2="114" y2="176"/>
+              <line x1="142" y1="24" x2="142" y2="176"/><line x1="170" y1="24" x2="170" y2="176"/>
+              <line x1="30" y1="24" x2="170" y2="24"/><line x1="30" y1="52" x2="170" y2="52"/>
+              <line x1="30" y1="80" x2="170" y2="80"/><line x1="30" y1="108" x2="170" y2="108"/>
+              <line x1="30" y1="136" x2="170" y2="136"/><line x1="30" y1="164" x2="170" y2="164"/>
+            </g>
+            <circle cx="142" cy="24" r="9" fill="var(--pink)"/>
+            <circle cx="170" cy="52" r="9" fill="var(--pink)"/>
+            <circle cx="142" cy="80" r="9" fill="var(--pink)"/>
+            <circle cx="170" cy="24" r="9" fill="var(--orange)"/>
+            <circle cx="170" cy="80" r="9" fill="var(--orange)"/>
+          </svg>
+        </div>
+        <div class="g-caption">
+          <span class="g-tag">詰碁</span>
+          <div class="g-title">詰碁ノート：隅の攻防</div>
+          <div class="g-date">2026.07.14</div>
+        </div>
+      </div>
+
+      <!-- item 3 -->
+      <div class="g-item" data-cat="sketch"
+        data-title="中盤の模様スケッチ"
+        data-date="2026.07.09"
+        data-tag="盤面スケッチ"
+        data-desc="観戦したプロの対局から、中盤の模様の張り合いが面白かった一場面を手描きで再現したもの。">
+        <div class="g-thumb">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="盤面スケッチ">
+            <rect width="200" height="200" fill="var(--wood)"/>
+            <g stroke="var(--wood-line)" stroke-width="1">
+              <line x1="30" y1="24" x2="30" y2="176"/><line x1="58" y1="24" x2="58" y2="176"/>
+              <line x1="86" y1="24" x2="86" y2="176"/><line x1="114" y1="24" x2="114" y2="176"/>
+              <line x1="142" y1="24" x2="142" y2="176"/><line x1="170" y1="24" x2="170" y2="176"/>
+              <line x1="30" y1="24" x2="170" y2="24"/><line x1="30" y1="52" x2="170" y2="52"/>
+              <line x1="30" y1="80" x2="170" y2="80"/><line x1="30" y1="108" x2="170" y2="108"/>
+              <line x1="30" y1="136" x2="170" y2="136"/><line x1="30" y1="164" x2="170" y2="164"/>
+            </g>
+            <circle cx="58" cy="80" r="9" fill="var(--orange)"/>
+            <circle cx="86" cy="108" r="9" fill="var(--orange)"/>
+            <circle cx="114" cy="80" r="9" fill="var(--pink)"/>
+            <circle cx="114" cy="136" r="9" fill="var(--pink)"/>
+            <circle cx="142" cy="108" r="9" fill="var(--orange)"/>
+            <circle cx="170" cy="136" r="9" fill="var(--pink)"/>
+          </svg>
+        </div>
+        <div class="g-caption">
+          <span class="g-tag">盤面スケッチ</span>
+          <div class="g-title">中盤の模様スケッチ</div>
+          <div class="g-date">2026.07.09</div>
+        </div>
+      </div>
+
+      <!-- item 4 -->
+      <div class="g-item" data-cat="kifu"
+        data-title="三々への対応、比較"
+        data-date="2026.06.28"
+        data-tag="棋譜"
+        data-desc="三々に入られたときの受け方をいくつか並べて比較したノート。定石本の型をそのまま覚えるのではなく、違いを見比べたかった。">
+        <div class="g-thumb">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="棋譜スケッチ2">
+            <rect width="200" height="200" fill="var(--wood)"/>
+            <g stroke="var(--wood-line)" stroke-width="1">
+              <line x1="30" y1="24" x2="30" y2="176"/><line x1="58" y1="24" x2="58" y2="176"/>
+              <line x1="86" y1="24" x2="86" y2="176"/><line x1="114" y1="24" x2="114" y2="176"/>
+              <line x1="142" y1="24" x2="142" y2="176"/><line x1="170" y1="24" x2="170" y2="176"/>
+              <line x1="30" y1="24" x2="170" y2="24"/><line x1="30" y1="52" x2="170" y2="52"/>
+              <line x1="30" y1="80" x2="170" y2="80"/><line x1="30" y1="108" x2="170" y2="108"/>
+              <line x1="30" y1="136" x2="170" y2="136"/><line x1="30" y1="164" x2="170" y2="164"/>
+            </g>
+            <circle cx="30" cy="24" r="9" fill="var(--pink)"/>
+            <circle cx="58" cy="24" r="9" fill="var(--orange)"/>
+            <circle cx="30" cy="52" r="9" fill="var(--orange)"/>
+            <circle cx="58" cy="52" r="9" fill="var(--pink)"/>
+          </svg>
+        </div>
+        <div class="g-caption">
+          <span class="g-tag">棋譜</span>
+          <div class="g-title">三々への対応、比較</div>
+          <div class="g-date">2026.06.28</div>
+        </div>
+      </div>
+
+      <!-- item 5 -->
+      <div class="g-item" data-cat="tsumego"
+        data-title="詰碁ノート：二段バネ"
+        data-date="2026.06.20"
+        data-tag="詰碁"
+        data-desc="二段バネの練習問題。何度も間違えたので手順を色分けして描き直した記録。">
+        <div class="g-thumb">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="詰碁スケッチ2">
+            <rect width="200" height="200" fill="var(--wood)"/>
+            <g stroke="var(--wood-line)" stroke-width="1">
+              <line x1="30" y1="24" x2="30" y2="176"/><line x1="58" y1="24" x2="58" y2="176"/>
+              <line x1="86" y1="24" x2="86" y2="176"/><line x1="114" y1="24" x2="114" y2="176"/>
+              <line x1="142" y1="24" x2="142" y2="176"/><line x1="170" y1="24" x2="170" y2="176"/>
+              <line x1="30" y1="24" x2="170" y2="24"/><line x1="30" y1="52" x2="170" y2="52"/>
+              <line x1="30" y1="80" x2="170" y2="80"/><line x1="30" y1="108" x2="170" y2="108"/>
+              <line x1="30" y1="136" x2="170" y2="136"/><line x1="30" y1="164" x2="170" y2="164"/>
+            </g>
+            <circle cx="86" cy="164" r="9" fill="var(--pink)"/>
+            <circle cx="114" cy="164" r="9" fill="var(--orange)"/>
+            <circle cx="86" cy="136" r="9" fill="var(--orange)"/>
+            <circle cx="114" cy="136" r="9" fill="var(--pink)"/>
+            <circle cx="142" cy="164" r="9" fill="var(--pink)"/>
+          </svg>
+        </div>
+        <div class="g-caption">
+          <span class="g-tag">詰碁</span>
+          <div class="g-title">詰碁ノート：二段バネ</div>
+          <div class="g-date">2026.06.20</div>
+        </div>
+      </div>
+
+      <!-- item 6 -->
+      <div class="g-item" data-cat="sketch"
+        data-title="終盤のヨセ比較"
+        data-date="2026.06.11"
+        data-tag="盤面スケッチ"
+        data-desc="終盤、ヨセの大きさを数える練習として、いくつかの候補手を並べて比べたスケッチ。">
+        <div class="g-thumb">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="盤面スケッチ2">
+            <rect width="200" height="200" fill="var(--wood)"/>
+            <g stroke="var(--wood-line)" stroke-width="1">
+              <line x1="30" y1="24" x2="30" y2="176"/><line x1="58" y1="24" x2="58" y2="176"/>
+              <line x1="86" y1="24" x2="86" y2="176"/><line x1="114" y1="24" x2="114" y2="176"/>
+              <line x1="142" y1="24" x2="142" y2="176"/><line x1="170" y1="24" x2="170" y2="176"/>
+              <line x1="30" y1="24" x2="170" y2="24"/><line x1="30" y1="52" x2="170" y2="52"/>
+              <line x1="30" y1="80" x2="170" y2="80"/><line x1="30" y1="108" x2="170" y2="108"/>
+              <line x1="30" y1="136" x2="170" y2="136"/><line x1="30" y1="164" x2="170" y2="164"/>
+            </g>
+            <circle cx="170" cy="108" r="9" fill="var(--orange)"/>
+            <circle cx="170" cy="136" r="9" fill="var(--pink)"/>
+            <circle cx="142" cy="136" r="9" fill="var(--orange)"/>
+            <circle cx="142" cy="108" r="9" fill="var(--pink)"/>
+          </svg>
+        </div>
+        <div class="g-caption">
+          <span class="g-tag">盤面スケッチ</span>
+          <div class="g-title">終盤のヨセ比較</div>
+          <div class="g-date">2026.06.11</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo-mark">石の音</span>
+        <p>囲碁を学びはじめた記録を、ゆるく残していくノート。Azalea Creative Room の一部として運営しています。</p>
+      </div>
+      <div>
+        <h4>SITE</h4>
+        <ul>
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="blog.html">日記</a></li>
+          <li><a href="gallery.html">ギャラリー</a></li>
+          <li><a href="about.html">about</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>AZALEA CREATIVE ROOM</h4>
+        <ul>
+          <li><a href="https://azaleacreativeroom888.github.io/" target="_blank" rel="noopener">Azalea Creative Room</a></li>
+          <li><a href="https://azaleacreativeroom888.github.io/links.html" target="_blank" rel="noopener">全リンク一覧</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="ai-notice">本サイトのコンテンツ（文章・画像・イラスト等）は生成AIの学習データとしての使用を禁じます。／ No part of this site may be used for AI training purposes.</p>
+      <p>&copy; 2026 石の音 - 囲碁学習ノート</p>
+    </div>
+  </div>
+</footer>
+
+<!-- lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <div class="lightbox-thumb" id="lbThumb"></div>
+    <div class="lightbox-body">
+      <button class="lightbox-close" id="lbClose" aria-label="閉じる">×</button>
+      <span class="lightbox-tag" id="lbTag"></span>
+      <div class="lightbox-title" id="lbTitle"></div>
+      <div class="lightbox-date" id="lbDate"></div>
+      <p class="lightbox-desc" id="lbDesc"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // filter
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const items = document.querySelectorAll('.g-item');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      items.forEach(item => {
+        item.style.display = (f === 'all' || item.dataset.cat === f) ? '' : 'none';
+      });
+    });
+  });
+
+  // lightbox
+  const lightbox = document.getElementById('lightbox');
+  const lbThumb = document.getElementById('lbThumb');
+  const lbTag = document.getElementById('lbTag');
+  const lbTitle = document.getElementById('lbTitle');
+  const lbDate = document.getElementById('lbDate');
+  const lbDesc = document.getElementById('lbDesc');
+  const lbClose = document.getElementById('lbClose');
+
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      const svg = item.querySelector('.g-thumb svg').cloneNode(true);
+      lbThumb.innerHTML = '';
+      lbThumb.appendChild(svg);
+      lbTag.textContent = item.dataset.tag;
+      lbTitle.textContent = item.dataset.title;
+      lbDate.textContent = item.dataset.date;
+      lbDesc.textContent = item.dataset.desc;
+      lightbox.classList.add('open');
+    });
+  });
+
+  function closeLightbox(){ lightbox.classList.remove('open'); }
+  lbClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
+</script>
+
+</body>
+</html>
