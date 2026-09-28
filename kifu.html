@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>棋譜ビューア | 石の音 - 囲碁学習ノート</title>
+<meta name="description" content="碁盤の上で一手ずつ進めながら棋譜を見られるページ。">
+<meta name="robots" content="noai, noimageai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink: #d85d84;
+    --pink-deep: #7a2242;
+    --pink-pale: #f6dfe6;
+    --orange: #e08238;
+    --orange-deep: #b85f22;
+    --wood: #f4e9d8;
+    --wood-line: #c9a876;
+    --cream: #fbf5ee;
+    --ink: #2c231f;
+    --ink-soft: #6b5c53;
+    --white: #fffdfa;
+    --shadow: 0 18px 40px -20px rgba(122,34,66,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.85;
+    letter-spacing:0.02em;
+  }
+  a{color:inherit; text-decoration:none;}
+  h1,h2,h3{ font-family:'Shippori Mincho', serif; }
+  ::selection{ background:var(--orange); color:var(--white); }
+  a:focus-visible, button:focus-visible, input:focus-visible{ outline:3px solid var(--orange); outline-offset:3px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+  }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 28px; }
+  .eyebrow{ font-size:0.78rem; letter-spacing:0.32em; color:var(--orange-deep); font-weight:700; display:inline-block; margin-bottom:14px; }
+
+  /* header */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(251,245,238,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(122,34,66,0.12);
+  }
+  .nav-inner{ display:flex; align-items:center; justify-content:space-between; padding:16px 28px; max-width:1080px; margin:0 auto; }
+  .logo{ display:flex; align-items:baseline; gap:10px; }
+  .logo-mark{ font-family:'Shippori Mincho', serif; font-weight:800; font-size:1.35rem; color:var(--pink-deep); }
+  .logo-sub{ font-size:0.68rem; letter-spacing:0.18em; color:var(--ink-soft); }
+  nav ul{ list-style:none; display:flex; gap:6px; }
+  nav a{ display:inline-block; font-size:0.9rem; font-weight:500; padding:8px 16px; border-radius:999px; color:var(--ink); transition:background .25s ease, color .25s ease; }
+  nav a:hover{ background:var(--pink); color:var(--white); }
+  nav a.current{ background:var(--pink-deep); color:var(--white); }
+  @media (max-width:640px){ nav ul{ gap:2px; } nav a{ padding:8px 10px; font-size:0.8rem; } }
+
+  /* hero */
+  .page-hero{ padding:56px 0 24px; }
+  .page-hero h1{ font-size:clamp(1.8rem, 4vw, 2.5rem); color:var(--pink-deep); font-weight:800; }
+  .crumb{ font-size:0.82rem; color:var(--ink-soft); margin-bottom:10px; }
+  .crumb a{ color:var(--orange-deep); font-weight:700; }
+  .crumb a:hover{ text-decoration:underline; }
+  .game-meta{ margin-top:12px; font-size:0.9rem; color:var(--ink-soft); display:flex; gap:8px 22px; flex-wrap:wrap; }
+  .game-meta b{ color:var(--pink-deep); font-weight:700; }
+
+  /* viewer */
+  .viewer{ padding:10px 0 60px; }
+  .viewer-grid{ display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,0.75fr); gap:30px; align-items:start; }
+  .board-wrap{
+    background:var(--wood);
+    border-radius:22px;
+    padding:14px;
+    box-shadow:var(--shadow);
+    border:1px solid rgba(122,34,66,0.08);
+  }
+  .board-wrap svg{ width:100%; height:auto; display:block; }
+
+  .side{ display:flex; flex-direction:column; gap:16px; }
+  .panel{
+    background:var(--white);
+    border-radius:18px;
+    padding:20px 22px;
+    border:1px solid rgba(122,34,66,0.09);
+  }
+  .panel h2{ font-size:0.78rem; letter-spacing:0.2em; color:var(--orange-deep); font-weight:700; margin-bottom:10px; font-family:'Zen Kaku Gothic New', sans-serif; }
+  .now{ font-family:'Shippori Mincho', serif; font-size:1.25rem; color:var(--pink-deep); font-weight:700; min-height:1.9em; }
+  .now .dot{ display:inline-block; width:14px; height:14px; border-radius:50%; margin-right:8px; vertical-align:-1px; border:1.5px solid var(--pink-deep); }
+  .dot.b{ background:var(--pink); }
+  .dot.w{ background:var(--white); border-color:var(--wood-line); }
+  .caps{ font-size:0.8rem; color:var(--ink-soft); margin-top:4px; }
+  .comment{ font-size:0.9rem; color:var(--ink); min-height:3.6em; }
+  .comment.empty{ color:var(--ink-soft); }
+
+  .controls{ display:flex; gap:8px; flex-wrap:wrap; }
+  .ctl{
+    flex:1; min-width:52px;
+    font-family:inherit; font-size:1rem; font-weight:700;
+    padding:10px 0;
+    border-radius:12px;
+    border:1.5px solid rgba(122,34,66,0.2);
+    background:var(--cream);
+    color:var(--pink-deep);
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .ctl:hover:not(:disabled){ background:var(--pink); color:var(--white); border-color:var(--pink); }
+  .ctl.main{ background:var(--orange); border-color:var(--orange); color:var(--white); }
+  .ctl.main:hover:not(:disabled){ background:var(--orange-deep); border-color:var(--orange-deep); }
+  .ctl:disabled{ opacity:0.4; cursor:not-allowed; }
+  .slider-row{ margin-top:14px; display:flex; align-items:center; gap:12px; font-size:0.8rem; color:var(--ink-soft); }
+  .slider-row input[type=range]{ flex:1; accent-color:var(--pink); }
+  .toggle{ margin-top:12px; font-size:0.84rem; color:var(--ink-soft); display:flex; align-items:center; gap:8px; cursor:pointer; }
+  .toggle input{ accent-color:var(--orange); width:16px; height:16px; }
+  .hint{ font-size:0.74rem; color:var(--ink-soft); margin-top:10px; }
+
+  /* move list */
+  .movelist{ display:flex; flex-wrap:wrap; gap:6px; max-height:180px; overflow-y:auto; }
+  .mv{
+    font-family:inherit; font-size:0.76rem;
+    padding:4px 10px; border-radius:999px;
+    border:1px solid rgba(122,34,66,0.15);
+    background:var(--cream); color:var(--ink);
+    cursor:pointer;
+  }
+  .mv.b{ border-left:6px solid var(--pink); }
+  .mv.w{ border-left:6px solid var(--wood-line); }
+  .mv:hover{ background:var(--pink-pale); }
+  .mv.active{ background:var(--pink-deep); color:var(--white); border-color:var(--pink-deep); }
+
+  @media (max-width:860px){ .viewer-grid{ grid-template-columns:1fr; } }
+
+  /* other games */
+  .others{ padding:0 0 100px; }
+  .others h2{ font-size:1.25rem; color:var(--pink-deep); margin-bottom:16px; }
+  .other-list{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
+  .other{
+    background:var(--white); border:1px solid rgba(122,34,66,0.1); border-radius:14px;
+    padding:16px 18px; position:relative; overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .other::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--pink),var(--orange)); }
+  .other:hover{ transform:translateY(-4px); box-shadow:var(--shadow); }
+  .other.now-playing{ border-color:var(--pink); }
+  .other b{ display:block; font-family:'Shippori Mincho', serif; color:var(--pink-deep); font-size:0.98rem; }
+  .other span{ font-size:0.76rem; color:var(--ink-soft); }
+
+  /* footer */
+  footer{ background:var(--ink); color:#cfc3ba; padding:56px 0 30px; }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:36px; margin-bottom:36px; }
+  .footer-brand .logo-mark{ color:var(--wood); }
+  .footer-brand p{ font-size:0.84rem; color:#a99d94; margin-top:10px; max-width:36ch; }
+  footer h4{ font-size:0.78rem; letter-spacing:0.14em; color:var(--orange); margin-bottom:14px; font-weight:700; }
+  footer ul{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+  footer a{ font-size:0.85rem; color:#cfc3ba; transition:color .2s ease; }
+  footer a:hover{ color:var(--orange); }
+  .footer-bottom{ border-top:1px solid rgba(255,255,255,0.1); padding-top:22px; display:flex; flex-direction:column; gap:8px; font-size:0.76rem; color:#8a7f77; }
+  .ai-notice{ font-size:0.74rem; color:#8a7f77; max-width:70ch; line-height:1.8; }
+  @media (max-width:760px){ .footer-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">石の音</span>
+      <span class="logo-sub">囲碁学習ノート</span>
+    </a>
+    <nav aria-label="サイト内ナビゲーション">
+      <ul>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="blog.html">日記</a></li>
+        <li><a href="gallery.html" class="current">ギャラリー</a></li>
+        <li><a href="about.html">about</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero wrap">
+    <p class="crumb"><a href="gallery.html">ギャラリー</a> ／ 棋譜ビューア</p>
+    <span class="eyebrow">KIFU VIEWER</span>
+    <h1 id="gameTitle">棋譜ビューア</h1>
+    <div class="game-meta" id="gameMeta"></div>
+  </section>
+
+  <section class="viewer wrap">
+    <div class="viewer-grid">
+
+      <div class="board-wrap" id="boardWrap" aria-live="polite"></div>
+
+      <div class="side">
+        <div class="panel">
+          <h2>NOW</h2>
+          <div class="now" id="nowText"></div>
+          <div class="caps" id="capsText"></div>
+        </div>
+
+        <div class="panel">
+          <h2>COMMENT</h2>
+          <p class="comment" id="commentText"></p>
+        </div>
+
+        <div class="panel">
+          <h2>CONTROL</h2>
+          <div class="controls">
+            <button class="ctl" id="btnFirst" aria-label="最初へ">⏮</button>
+            <button class="ctl" id="btnPrev" aria-label="一手戻る">◀</button>
+            <button class="ctl main" id="btnNext" aria-label="一手進む">▶</button>
+            <button class="ctl" id="btnLast" aria-label="最後へ">⏭</button>
+          </div>
+          <div class="slider-row">
+            <span>0</span>
+            <input type="range" id="slider" min="0" value="0" aria-label="手数">
+            <span id="sliderMax"></span>
+          </div>
+          <label class="toggle"><input type="checkbox" id="numToggle"> 石に手数を表示する</label>
+          <p class="hint">キーボードの ← → でも進められます（Home / End で最初・最後）。</p>
+        </div>
+
+        <div class="panel">
+          <h2>MOVES</h2>
+          <div class="movelist" id="moveList"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="others wrap">
+    <h2>ほかの棋譜</h2>
+    <div class="other-list" id="otherList"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo-mark">石の音</span>
+        <p>囲碁を学びはじめた記録を、ゆるく残していくノート。Azalea Creative Room の一部として運営しています。</p>
+      </div>
+      <div>
+        <h4>SITE</h4>
+        <ul>
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="blog.html">日記</a></li>
+          <li><a href="gallery.html">ギャラリー</a></li>
+          <li><a href="about.html">about</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>AZALEA CREATIVE ROOM</h4>
+        <ul>
+          <li><a href="https://azaleacreativeroom888.github.io/" target="_blank" rel="noopener">Azalea Creative Room</a></li>
+          <li><a href="https://azaleacreativeroom888.github.io/links.html" target="_blank" rel="noopener">全リンク一覧</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="ai-notice">当サイトに掲載されている画像・文章・作品について、AI学習への利用、トレース（トレパク）、無断転載・転載、二次利用を禁止します。スクリーンショットの転載・無断引用はご遠慮ください。</p>
+      <p class="ai-notice">Please refrain from using any images, text, or works on this website for AI training, tracing, unauthorized reproduction, redistribution, or secondary use.</p>
+      <p>&copy; 2026 石の音 - 囲碁学習ノート</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   棋譜データ
+   - moves は SGF と同じ「2文字座標」（左から a,b,c… 上から a,b,c…）
+     例: 9路盤の天元 = "ee"。パスは "--"
+   - 黒番から交互に打つ扱い（黒＝ピンク石／白＝白石）
+   - comments は { 手数: "コメント" } で任意に追加
+   - 棋譜を増やすときは GAMES に {…} を1つ足すだけ
+   ========================================================= */
+const GAMES = [
+  {
+    id: 0,
+    title: "サンプル：9路盤の練習対局",
+    date: "2026.09.28",
+    size: 9,
+    black: "自分",
+    white: "相手",
+    result: "（サンプルなので未記入）",
+    moves: "ee cc gc cg gg ce ec ge eg dd de ed fd cd ff fe".split(" "),
+    comments: {
+      1: "天元からスタート。9路盤では中央が強い。",
+      2: "白は左上の星に。",
+      3: "黒は右上の星で対抗。",
+      10: "ここで黒の連絡を断ちにきた。",
+      16: "サンプルはここまで。実際の棋譜に差し替えてね。"
+    }
+  }
+];
+
+/* ---------------- 以下、ビューアの処理 ---------------- */
+const params = new URLSearchParams(location.search);
+let gi = parseInt(params.get('g'), 10);
+if (isNaN(gi) || gi < 0 || gi >= GAMES.length) gi = 0;
+const game = GAMES[gi];
+const N = game.size;
+
+let step = 0;
+let showNum = false;
+
+const $ = id => document.getElementById(id);
+const COLS = "ABCDEFGHJKLMNOPQRST".slice(0, N);
+
+function parseMove(tok){
+  if (!tok || tok === "--" || tok.length < 2) return null;
+  const x = tok.charCodeAt(0) - 97, y = tok.charCodeAt(1) - 97;
+  if (x < 0 || y < 0 || x >= N || y >= N) return null;
+  return {x, y};
+}
+function label(m){ return m ? COLS[m.x] + (N - m.y) : "パス"; }
+
+function groupOf(board, x, y){
+  const color = board[y][x], seen = new Set(), stack = [[x,y]], libs = new Set(), stones = [];
+  while (stack.length){
+    const [cx, cy] = stack.pop(), k = cx + "," + cy;
+    if (seen.has(k)) continue;
+    seen.add(k); stones.push([cx, cy]);
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy]) => {
+      const nx = cx+dx, ny = cy+dy;
+      if (nx<0||ny<0||nx>=N||ny>=N) return;
+      const v = board[ny][nx];
+      if (v === 0) libs.add(nx + "," + ny);
+      else if (v === color) stack.push([nx, ny]);
+    });
+  }
+  return {stones, libs: libs.size};
+}
+
+function position(upto){
+  const board = Array.from({length:N}, () => Array(N).fill(0));
+  const moveNo = Array.from({length:N}, () => Array(N).fill(0));
+  const cap = {1:0, 2:0}; // 1=黒が取った数, 2=白が取った数
+  let last = null;
+  for (let i = 0; i < upto; i++){
+    const color = (i % 2 === 0) ? 1 : 2;
+    const m = parseMove(game.moves[i]);
+    last = m ? {x:m.x, y:m.y, i} : null;
+    if (!m) continue;
+    board[m.y][m.x] = color; moveNo[m.y][m.x] = i + 1;
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy]) => {
+      const nx = m.x+dx, ny = m.y+dy;
+      if (nx<0||ny<0||nx>=N||ny>=N) return;
+      if (board[ny][nx] === 3 - color){
+        const g = groupOf(board, nx, ny);
+        if (g.libs === 0) g.stones.forEach(([sx,sy]) => { board[sy][sx] = 0; moveNo[sy][sx] = 0; cap[color]++; });
+      }
+    });
+    const own = groupOf(board, m.x, m.y);
+    if (own.libs === 0) own.stones.forEach(([sx,sy]) => { board[sy][sx] = 0; moveNo[sy][sx] = 0; cap[3-color]++; });
+  }
+  return {board, moveNo, cap, last};
+}
+
+function stars(){
+  if (N === 9) return [[2,2],[6,2],[2,6],[6,6],[4,4]];
+  if (N === 13) return [[3,3],[9,3],[3,9],[9,9],[6,6]];
+  if (N === 19){ const p=[3,9,15], r=[]; p.forEach(a=>p.forEach(b=>r.push([a,b]))); return r; }
+  return [];
+}
+
+function draw(){
+  const cell = N === 19 ? 30 : (N === 13 ? 40 : 52);
+  const m = 34;
+  const size = m*2 + cell*(N-1);
+  const pos = position(step);
+  let s = `<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${N}路盤 ${step}手目の局面">`;
+  s += `<rect width="${size}" height="${size}" rx="12" fill="var(--wood)"/>`;
+  // grid
+  s += `<g stroke="var(--wood-line)" stroke-width="1.4">`;
+  for (let i = 0; i < N; i++){
+    const p = m + i*cell;
+    s += `<line x1="${p}" y1="${m}" x2="${p}" y2="${size-m}"/><line x1="${m}" y1="${p}" x2="${size-m}" y2="${p}"/>`;
+  }
+  s += `</g>`;
+  s += `<rect x="${m}" y="${m}" width="${cell*(N-1)}" height="${cell*(N-1)}" fill="none" stroke="var(--wood-line)" stroke-width="2.2"/>`;
+  stars().forEach(([x,y]) => { s += `<circle cx="${m+x*cell}" cy="${m+y*cell}" r="${cell*0.09}" fill="var(--wood-line)"/>`; });
+  // coordinates
+  s += `<g font-size="${cell*0.3}" fill="var(--ink-soft)" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif">`;
+  for (let i = 0; i < N; i++){
+    const p = m + i*cell;
+    s += `<text x="${p}" y="${m-14}">${COLS[i]}</text><text x="${p}" y="${size-m+24}">${COLS[i]}</text>`;
+    s += `<text x="${m-18}" y="${p+cell*0.1}">${N-i}</text><text x="${size-m+18}" y="${p+cell*0.1}">${N-i}</text>`;
+  }
+  s += `</g>`;
+  // stones
+  const r = cell * 0.46;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++){
+    const v = pos.board[y][x]; if (!v) continue;
+    const cx = m + x*cell, cy = m + y*cell;
+    const isLast = pos.last && pos.last.x === x && pos.last.y === y;
+    const fill = v === 1 ? "var(--pink)" : "var(--white)";
+    const stroke = isLast ? "var(--orange)" : (v === 1 ? "var(--pink-deep)" : "var(--wood-line)");
+    s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${isLast ? 3.4 : 1.6}"/>`;
+    if (showNum){
+      const col = isLast ? "var(--orange-deep)" : (v === 1 ? "var(--white)" : "var(--pink-deep)");
+      s += `<text x="${cx}" y="${cy+cell*0.14}" font-size="${cell*0.38}" font-weight="700" text-anchor="middle" fill="${col}" font-family="Zen Kaku Gothic New, sans-serif">${pos.moveNo[y][x]}</text>`;
+    } else if (isLast){
+      s += `<circle cx="${cx}" cy="${cy}" r="${r*0.32}" fill="var(--orange)"/>`;
+    }
+  }
+  s += `</svg>`;
+  $('boardWrap').innerHTML = s;
+
+  // info
+  if (step === 0){
+    $('nowText').textContent = "対局開始前";
+    $('capsText').textContent = "";
+  } else {
+    const color = (step - 1) % 2 === 0 ? "b" : "w";
+    const mv = parseMove(game.moves[step-1]);
+    $('nowText').innerHTML = `<span class="dot ${color}"></span>${step}手目　${color === "b" ? "黒" : "白"} ${label(mv)}`;
+    $('capsText').textContent = `取った石　黒：${pos.cap[1]}　白：${pos.cap[2]}`;
+  }
+  const c = game.comments && game.comments[step];
+  $('commentText').textContent = c || (step === 0 ? "▶ を押すと一手ずつ進みます。" : "この手へのコメントはありません。");
+  $('commentText').className = "comment" + (c ? "" : " empty");
+
+  $('slider').value = step;
+  $('btnFirst').disabled = $('btnPrev').disabled = step === 0;
+  $('btnNext').disabled = $('btnLast').disabled = step === game.moves.length;
+  document.querySelectorAll('.mv').forEach(el => el.classList.toggle('active', +el.dataset.n === step));
+}
+
+function go(n){ step = Math.max(0, Math.min(game.moves.length, n)); draw(); }
+
+/* init */
+document.title = game.title + " | 石の音";
+$('gameTitle').textContent = game.title;
+$('gameMeta').innerHTML =
+  `<span>日付：<b>${game.date}</b></span><span>${N}路盤</span><span>黒：<b>${game.black}</b></span><span>白：<b>${game.white}</b></span><span>結果：<b>${game.result}</b></span>`;
+$('slider').max = game.moves.length;
+$('sliderMax').textContent = game.moves.length;
+
+game.moves.forEach((tok, i) => {
+  const b = document.createElement('button');
+  b.className = 'mv ' + (i % 2 === 0 ? 'b' : 'w');
+  b.dataset.n = i + 1;
+  b.textContent = (i+1) + " " + label(parseMove(tok));
+  b.addEventListener('click', () => go(i+1));
+  $('moveList').appendChild(b);
+});
+
+GAMES.forEach((g, i) => {
+  const a = document.createElement('a');
+  a.className = 'other' + (i === gi ? ' now-playing' : '');
+  a.href = 'kifu.html?g=' + i;
+  a.innerHTML = `<b>${g.title}</b><span>${g.date}・${g.size}路盤・${g.moves.length}手</span>`;
+  $('otherList').appendChild(a);
+});
+
+$('btnFirst').addEventListener('click', () => go(0));
+$('btnPrev').addEventListener('click', () => go(step-1));
+$('btnNext').addEventListener('click', () => go(step+1));
+$('btnLast').addEventListener('click', () => go(game.moves.length));
+$('slider').addEventListener('input', e => go(+e.target.value));
+$('numToggle').addEventListener('change', e => { showNum = e.target.checked; draw(); });
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' && e.target.type === 'range') return;
+  if (e.key === 'ArrowRight') go(step+1);
+  else if (e.key === 'ArrowLeft') go(step-1);
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(game.moves.length);
+});
+
+draw();
+</script>
+
+</body>
+</html>
