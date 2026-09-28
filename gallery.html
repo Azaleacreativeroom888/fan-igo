@@ -111,6 +111,34 @@
     margin-top:14px;
   }
 
+  /* kifu link boxes */
+  .kifu-links{ padding:0 0 10px; }
+  .kifu-links h2{ font-size:1.25rem; color:var(--pink-deep); margin-bottom:6px; }
+  .kifu-links .sub{ font-size:0.86rem; color:var(--ink-soft); margin-bottom:18px; }
+  .kifu-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:14px; }
+  .kifu-box{
+    display:flex; align-items:center; gap:16px;
+    background:var(--white);
+    border:1px solid rgba(122,34,66,0.1);
+    border-radius:14px;
+    padding:16px 18px;
+    position:relative; overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .kifu-box::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--pink),var(--orange)); }
+  .kifu-box:hover{ transform:translateY(-4px); box-shadow:var(--shadow); border-color:rgba(216,93,132,0.4); }
+  .kifu-icon{
+    flex-shrink:0; width:46px; height:46px; border-radius:12px;
+    background:var(--pink-pale);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .kifu-icon svg{ width:30px; height:30px; }
+  .kifu-text{ flex:1; min-width:0; }
+  .kifu-name{ display:block; font-family:'Shippori Mincho', serif; font-weight:700; font-size:0.98rem; color:var(--pink-deep); }
+  .kifu-desc{ display:block; font-size:0.76rem; color:var(--ink-soft); }
+  .kifu-arrow{ color:rgba(216,93,132,0.45); font-size:1.1rem; transition:color .25s ease, transform .25s ease; }
+  .kifu-box:hover .kifu-arrow{ color:var(--orange-deep); transform:translateX(3px); }
+
   /* filter tabs */
   .filters{
     display:flex; gap:10px; flex-wrap:wrap;
@@ -273,6 +301,26 @@
       <button class="filter-btn" data-filter="kifu">棋譜</button>
       <button class="filter-btn" data-filter="tsumego">詰碁</button>
       <button class="filter-btn" data-filter="sketch">盤面スケッチ</button>
+    </div>
+  </section>
+
+  <section class="kifu-links wrap">
+    <h2>棋譜ビューア</h2>
+    <p class="sub">碁盤の上で一手ずつ進めながら見られる棋譜です。</p>
+    <div class="kifu-grid">
+      <a class="kifu-box" href="kifu.html?g=0">
+        <span class="kifu-icon">
+          <svg viewBox="0 0 40 40" aria-hidden="true">
+            <g stroke="var(--wood-line)" stroke-width="1.5"><line x1="8" y1="4" x2="8" y2="36"/><line x1="20" y1="4" x2="20" y2="36"/><line x1="32" y1="4" x2="32" y2="36"/><line x1="4" y1="8" x2="36" y2="8"/><line x1="4" y1="20" x2="36" y2="20"/><line x1="4" y1="32" x2="36" y2="32"/></g>
+            <circle cx="20" cy="20" r="6" fill="var(--pink)"/><circle cx="32" cy="8" r="6" fill="var(--white)" stroke="var(--wood-line)"/><circle cx="8" cy="32" r="6" fill="var(--orange)"/>
+          </svg>
+        </span>
+        <span class="kifu-text">
+          <span class="kifu-name">サンプル：9路盤の練習対局</span>
+          <span class="kifu-desc">2026.09.28・9路盤・16手</span>
+        </span>
+        <span class="kifu-arrow">›</span>
+      </a>
     </div>
   </section>
 
