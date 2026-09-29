@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>棋譜一覧 | 石の音 - 囲碁学習ノート</title>
+<meta name="description" content="一手ずつ盤面を再現しながら見られる棋譜の一覧ページ。">
+<meta name="robots" content="noai, noimageai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink: #d85d84;
+    --pink-deep: #7a2242;
+    --pink-pale: #f6dfe6;
+    --orange: #e08238;
+    --orange-deep: #b85f22;
+    --wood: #f4e9d8;
+    --wood-line: #c9a876;
+    --cream: #fbf5ee;
+    --ink: #2c231f;
+    --ink-soft: #6b5c53;
+    --white: #fffdfa;
+    --shadow: 0 18px 40px -20px rgba(122,34,66,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.85;
+    letter-spacing:0.02em;
+  }
+  a{color:inherit; text-decoration:none;}
+  h1,h2,h3{ font-family:'Shippori Mincho', serif; }
+  ::selection{ background:var(--orange); color:var(--white); }
+  a:focus-visible{ outline:3px solid var(--orange); outline-offset:3px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+  }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 28px; }
+  .eyebrow{ font-size:0.78rem; letter-spacing:0.32em; color:var(--orange-deep); font-weight:700; display:inline-block; margin-bottom:14px; }
+
+  /* header */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(251,245,238,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(122,34,66,0.12);
+  }
+  .nav-inner{ display:flex; align-items:center; justify-content:space-between; padding:16px 28px; max-width:1080px; margin:0 auto; }
+  .logo{ display:flex; align-items:baseline; gap:10px; }
+  .logo-mark{ font-family:'Shippori Mincho', serif; font-weight:800; font-size:1.35rem; color:var(--pink-deep); }
+  .logo-sub{ font-size:0.68rem; letter-spacing:0.18em; color:var(--ink-soft); }
+  nav ul{ list-style:none; display:flex; gap:6px; }
+  nav a{ display:inline-block; font-size:0.9rem; font-weight:500; padding:8px 16px; border-radius:999px; color:var(--ink); transition:background .25s ease, color .25s ease; }
+  nav a:hover{ background:var(--pink); color:var(--white); }
+  nav a.current{ background:var(--pink-deep); color:var(--white); }
+  @media (max-width:640px){ nav ul{ gap:2px; } nav a{ padding:8px 10px; font-size:0.8rem; } }
+
+  /* hero */
+  .page-hero{ padding:64px 0 30px; }
+  .page-hero h1{ font-size:clamp(2rem, 4vw, 2.7rem); color:var(--pink-deep); font-weight:800; }
+  .page-hero p{ color:var(--ink-soft); font-size:0.96rem; max-width:52ch; margin-top:14px; }
+  .crumb{ font-size:0.82rem; color:var(--ink-soft); margin-bottom:10px; }
+  .crumb a{ color:var(--orange-deep); font-weight:700; }
+  .crumb a:hover{ text-decoration:underline; }
+
+  /* kifu link boxes (galleryと同じデザイン) */
+  .kifu-links{ padding:10px 0 110px; }
+  .kifu-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:14px; }
+  .kifu-box{
+    display:flex; align-items:center; gap:16px;
+    background:var(--white);
+    border:1px solid rgba(122,34,66,0.1);
+    border-radius:14px;
+    padding:18px 20px;
+    position:relative; overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .kifu-box::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--pink),var(--orange)); }
+  .kifu-box:hover{ transform:translateY(-4px); box-shadow:var(--shadow); border-color:rgba(216,93,132,0.4); }
+  .kifu-icon{
+    flex-shrink:0; width:48px; height:48px; border-radius:12px;
+    background:var(--pink-pale);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .kifu-icon svg{ width:32px; height:32px; }
+  .kifu-text{ flex:1; min-width:0; }
+  .kifu-name{ display:block; font-family:'Shippori Mincho', serif; font-weight:700; font-size:1.02rem; color:var(--pink-deep); }
+  .kifu-desc{ display:block; font-size:0.78rem; color:var(--ink-soft); margin-top:2px; }
+  .kifu-arrow{ color:rgba(216,93,132,0.45); font-size:1.15rem; transition:color .25s ease, transform .25s ease; }
+  .kifu-box:hover .kifu-arrow{ color:var(--orange-deep); transform:translateX(3px); }
+
+  .empty-note{
+    margin-top:26px;
+    font-size:0.86rem;
+    color:var(--ink-soft);
+    background:var(--white);
+    border:1px dashed rgba(122,34,66,0.25);
+    border-radius:14px;
+    padding:18px 20px;
+  }
+
+  /* footer */
+  footer{ background:var(--ink); color:#cfc3ba; padding:56px 0 30px; }
+  .footer-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:36px; margin-bottom:36px; }
+  .footer-brand .logo-mark{ color:var(--wood); }
+  .footer-brand p{ font-size:0.84rem; color:#a99d94; margin-top:10px; max-width:36ch; }
+  footer h4{ font-size:0.78rem; letter-spacing:0.14em; color:var(--orange); margin-bottom:14px; font-weight:700; }
+  footer ul{ list-style:none; display:flex; flex-direction:column; gap:9px; }
+  footer a{ font-size:0.85rem; color:#cfc3ba; transition:color .2s ease; }
+  footer a:hover{ color:var(--orange); }
+  .footer-bottom{ border-top:1px solid rgba(255,255,255,0.1); padding-top:22px; display:flex; flex-direction:column; gap:8px; font-size:0.76rem; color:#8a7f77; }
+  .ai-notice{ font-size:0.74rem; color:#8a7f77; max-width:70ch; line-height:1.8; }
+  @media (max-width:760px){ .footer-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">石の音</span>
+      <span class="logo-sub">囲碁学習ノート</span>
+    </a>
+    <nav aria-label="サイト内ナビゲーション">
+      <ul>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="blog.html">日記</a></li>
+        <li><a href="gallery.html" class="current">ギャラリー</a></li>
+        <li><a href="about.html">about</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero wrap">
+    <p class="crumb"><a href="gallery.html">ギャラリー</a> ／ 棋譜一覧</p>
+    <span class="eyebrow">KIFU LIST</span>
+    <h1>棋譜一覧</h1>
+    <p>一手ずつ盤面を再現しながら見られる棋譜のリストです。気になる対局を選んでください。</p>
+  </section>
+
+  <section class="kifu-links wrap">
+    <!--
+      棋譜を増やすときは、この .kifu-box を1つコピーして
+      href を kifu2.html, kifu3.html … に変えるだけでOK。
+    -->
+    <div class="kifu-grid">
+      <a class="kifu-box" href="kifu1.html">
+        <span class="kifu-icon">
+          <svg viewBox="0 0 40 40" aria-hidden="true">
+            <g stroke="var(--wood-line)" stroke-width="1.5"><line x1="8" y1="4" x2="8" y2="36"/><line x1="20" y1="4" x2="20" y2="36"/><line x1="32" y1="4" x2="32" y2="36"/><line x1="4" y1="8" x2="36" y2="8"/><line x1="4" y1="20" x2="36" y2="20"/><line x1="4" y1="32" x2="36" y2="32"/></g>
+            <circle cx="20" cy="20" r="6" fill="var(--pink)"/><circle cx="32" cy="8" r="6" fill="var(--white)" stroke="var(--wood-line)"/><circle cx="8" cy="32" r="6" fill="var(--orange)"/>
+          </svg>
+        </span>
+        <span class="kifu-text">
+          <span class="kifu-name">サンプル：9路盤の練習対局</span>
+          <span class="kifu-desc">2026.09.28・9路盤・16手</span>
+        </span>
+        <span class="kifu-arrow">›</span>
+      </a>
+    </div>
+
+    <p class="empty-note">棋譜を増やすたびに、このページにリンクボックスを追加していく予定です。</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo-mark">石の音</span>
+        <p>囲碁を学びはじめた記録を、ゆるく残していくノート。Azalea Creative Room の一部として運営しています。</p>
+      </div>
+      <div>
+        <h4>SITE</h4>
+        <ul>
+          <li><a href="index.html">ホーム</a></li>
+          <li><a href="blog.html">日記</a></li>
+          <li><a href="gallery.html">ギャラリー</a></li>
+          <li><a href="about.html">about</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>AZALEA CREATIVE ROOM</h4>
+        <ul>
+          <li><a href="https://azaleacreativeroom888.github.io/" target="_blank" rel="noopener">Azalea Creative Room</a></li>
+          <li><a href="https://azaleacreativeroom888.github.io/links.html" target="_blank" rel="noopener">全リンク一覧</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="ai-notice">当サイトに掲載されている画像・文章・作品について、AI学習への利用、トレース（トレパク）、無断転載・転載、二次利用を禁止します。スクリーンショットの転載・無断引用はご遠慮ください。</p>
+      <p class="ai-notice">Please refrain from using any images, text, or works on this website for AI training, tracing, unauthorized reproduction, redistribution, or secondary use.</p>
+      <p>&copy; 2026 石の音 - 囲碁学習ノート</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
