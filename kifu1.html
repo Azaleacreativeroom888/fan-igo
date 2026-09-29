@@ -281,33 +281,36 @@
      例: 9路盤の天元 = "ee"。パスは "--"
    - 黒番から交互に打つ扱い（黒＝ピンク石／白＝白石）
    - comments は { 手数: "コメント" } で任意に追加
-   - 棋譜を増やすときは GAMES に {…} を1つ足すだけ
+   - 1局1ファイル方式：新しい棋譜を増やすときは、このファイルをまるごと
+     コピーして kifu2.html のような名前で保存し、GAME の中身を書き換える。
+     そのあと OTHERS にも新しいファイルを追記する（全ファイルで揃えること）。
    ========================================================= */
-const GAMES = [
-  {
-    id: 0,
-    title: "サンプル：9路盤の練習対局",
-    date: "2026.09.28",
-    size: 9,
-    black: "自分",
-    white: "相手",
-    result: "（サンプルなので未記入）",
-    moves: "ee cc gc cg gg ce ec ge eg dd de ed fd cd ff fe".split(" "),
-    comments: {
-      1: "天元からスタート。9路盤では中央が強い。",
-      2: "白は左上の星に。",
-      3: "黒は右上の星で対抗。",
-      10: "ここで黒の連絡を断ちにきた。",
-      16: "サンプルはここまで。実際の棋譜に差し替えてね。"
-    }
+const GAME = {
+  title: "サンプル：9路盤の練習対局",
+  date: "2026.09.28",
+  size: 9,
+  black: "自分",
+  white: "相手",
+  result: "（サンプルなので未記入）",
+  moves: "ee cc gc cg gg ce ec ge eg dd de ed fd cd ff fe".split(" "),
+  comments: {
+    1: "天元からスタート。9路盤では中央が強い。",
+    2: "白は左上の星に。",
+    3: "黒は右上の星で対抗。",
+    10: "ここで黒の連絡を断ちにきた。",
+    16: "サンプルはここまで。実際の棋譜に差し替えてね。"
   }
+};
+
+/* 「ほかの棋譜」欄に出す一覧。棋譜を増やしたら、このファイル "も"
+   含めて全部の kifu*.html の OTHERS を同じ内容に揃えてね。
+   href には自分自身も入れてOK（自動でハイライトされる）。 */
+const OTHERS = [
+  { href: "kifu1.html", title: "サンプル：9路盤の練習対局", date: "2026.09.28", size: 9, moves: 16 }
 ];
 
 /* ---------------- 以下、ビューアの処理 ---------------- */
-const params = new URLSearchParams(location.search);
-let gi = parseInt(params.get('g'), 10);
-if (isNaN(gi) || gi < 0 || gi >= GAMES.length) gi = 0;
-const game = GAMES[gi];
+const game = GAME;
 const N = game.size;
 
 let step = 0;
@@ -455,11 +458,12 @@ game.moves.forEach((tok, i) => {
   $('moveList').appendChild(b);
 });
 
-GAMES.forEach((g, i) => {
+const here = location.pathname.split('/').pop();
+OTHERS.forEach((g) => {
   const a = document.createElement('a');
-  a.className = 'other' + (i === gi ? ' now-playing' : '');
-  a.href = 'kifu.html?g=' + i;
-  a.innerHTML = `<b>${g.title}</b><span>${g.date}・${g.size}路盤・${g.moves.length}手</span>`;
+  a.className = 'other' + (g.href === here ? ' now-playing' : '');
+  a.href = g.href;
+  a.innerHTML = `<b>${g.title}</b><span>${g.date}・${g.size}路盤・${g.moves}手</span>`;
   $('otherList').appendChild(a);
 });
 
