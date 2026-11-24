@@ -278,8 +278,11 @@
 <script>
 /* =========================================================
    棋譜データ
-   - moves は SGF と同じ「2文字座標」（左から a,b,c… 上から a,b,c…）
-     例: 9路盤の天元 = "ee"。パスは "--"
+   - moves は「2文字座標」。左下の隅が "aa"。
+     1文字目＝左から右へ a,b,c…（横）
+     2文字目＝下から上へ a,b,c…（縦）
+     例: 9路盤の左下隅 = "aa"、天元 = "ee"、右上隅 = "ii"。パスは "--"
+     ※ SGFは上から数えるので、SGFをそのまま貼ると上下が逆になる
    - 黒番から交互に打つ扱い（黒＝ピンク石／白＝白石）
    - comments は { 手数: "コメント" } で任意に追加
    - 1局1ファイル方式：新しい棋譜を増やすときは、このファイルをまるごと
@@ -288,19 +291,18 @@
    ========================================================= */
 const GAME = {
   title: "サンプル：9路盤の練習対局",
-  date: "2026.11.24",
+  date: "2026.09.28",
   size: 9,
   black: "自分",
   white: "相手",
-  result: "相手の勝ち",
-  moves: "ee ge cc dd ce de df ec ef cd be bd gf fd ad bc ae hf hg gg fg gh fh ff fe gf ac fi ei eh gi eg fi dh ed cf ".split(" "),
+  result: "（サンプルなので未記入）",
+  moves: "ee ge cc dd ce de df ec ef cd be bd gf fd ad bc ae hf hg gg fg gh fh ff fe gf ac fi ei eh gi eg fi dh ed cf".split(" "),
   comments: {
-    2: "悪手。",
-    4: "悪手。",
-    8: "悪手。",
-    16: "悪手。",
-    28: "悪手。",
-    34: "悪手。",
+    1: "天元からスタート。9路盤では中央が強い。",
+    2: "白は左上の星に。",
+    3: "黒は右上の星で対抗。",
+    10: "ここで黒の連絡を断ちにきた。",
+    16: "サンプルはここまで。実際の棋譜に差し替えてね。"
   }
 };
 
@@ -323,7 +325,7 @@ const COLS = "ABCDEFGHJKLMNOPQRST".slice(0, N);
 
 function parseMove(tok){
   if (!tok || tok === "--" || tok.length < 2) return null;
-  const x = tok.charCodeAt(0) - 97, y = tok.charCodeAt(1) - 97;
+  const x = tok.charCodeAt(0) - 97, y = N - 1 - (tok.charCodeAt(1) - 97); // 縦は下から数える
   if (x < 0 || y < 0 || x >= N || y >= N) return null;
   return {x, y};
 }
